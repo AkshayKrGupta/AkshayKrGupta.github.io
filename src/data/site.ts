@@ -56,6 +56,6 @@ export const site: SiteConfig = {
 
   blog: {
     name: 'Writing',
-    description: 'Practical insights into enterprise architecture, distributed systems, AI adoption in regulated industries, and developer tooling.',
+    description: 'Thinking and writing about systems, architecture, AI, and the decisions behind building software for regulated environments.',
   },
 };
