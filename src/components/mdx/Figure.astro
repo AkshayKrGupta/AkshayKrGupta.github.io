@@ -1,6 +1,9 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
 interface Props {
-  src: string;
+  src: string | ImageMetadata;
   alt: string;
   caption?: string;
   width?: number | string;
@@ -8,18 +11,29 @@ interface Props {
 }
 
 const { src, alt, caption, width, height } = Astro.props;
+const isImageMetadata = typeof src === 'object' && src !== null && 'src' in src;
 ---
 
 <figure class="figure-container">
-  <img
-    src={src}
-    alt={alt}
-    width={width}
-    height={height}
-    loading="lazy"
-    decoding="async"
-    class="figure-image"
-  />
+  {isImageMetadata ? (
+    <Image
+      src={src as ImageMetadata}
+      alt={alt}
+      class="figure-image"
+      loading="lazy"
+      decoding="async"
+    />
+  ) : (
+    <img
+      src={src as string}
+      alt={alt}
+      width={width}
+      height={height}
+      loading="lazy"
+      decoding="async"
+      class="figure-image"
+    />
+  )}
   {caption && (
     <figcaption class="figure-caption font-mono">
       {caption}
@@ -37,6 +51,8 @@ const { src, alt, caption, width, height } = Astro.props;
   }
 
   .figure-image {
+    max-width: 100%;
+    height: auto;
     border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-raised);
