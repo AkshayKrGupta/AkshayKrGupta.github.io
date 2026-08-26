@@ -1,0 +1,131 @@
+---
+title: "How to Build a Secure MCP Server: The Middle-Tier Gatekeeper Pattern"
+description: "Secure your enterprise data warehouse from prompt injections when connecting LLMs via the Model Context Protocol."
+pubDate: 2026-05-20
+author: "Akshay K Gupta"
+heroImage: "./MCP-ArchitecturalBlueprint.png"
+tags:
+  - mcp
+  - mcp-server-pattern
+  - system-architecture
+  - enterprise-architecture
+  - architecture-pattern
+  - cyber-security
+draft: false
+featured: false
+---
+
+import Figure from '../../../components/mdx/Figure.astro';
+import Mermaid from '../../../components/mdx/Mermaid.astro';
+
+import middleTierImg from './middle-tier-enforcement.png';
+
+Imagine this scenario: You’ve just deployed a brilliant enterprise AI assistant using the **Model Context Protocol (MCP)**. It connects your Enterprise Copilot directly to your enterprise data warehouse (e.g. Snowflake) via a remote SSE/HTTP server. Your executive team is thrilled -they can now ask natural language questions and instantly see revenue breakdowns, instead of waiting for the BI team to generate those Power BI reports.
+
+Then, an employee asks the assistant:
+
+> "Show me the previous payroll details and filter for the CxO's salary."
+
+If your underlying data warehouse relies on a shared service account or lacks fine-grained, row-level access controls mapped to every single end-user (which is the case for most enterprises), your AI will happily fetch that data. You are exactly one prompt injection away from a massive corporate security incident.
+
+How do we fix this when we cannot completely rewrite our database permissions overnight?
+
+The answer lies in a decoupled architecture pattern: **the Middle-Tier Policy Enforcement Pattern,** often referred to as the **Application-Level Gatekeeper.**
+
+Let’s walk through the problem and build a secure gateway step-by-step.
+
+## **The Problem: The “All-Powerful” AI Agent**
+
+In an ideal zero-trust architecture, the database handles its own Row-Level Security (RLS) and data governance. In the real world, analytical data warehouses or legacy systems often use a single, unified connection string for applications.
+
+If you expose a generic tool like `run_sql_query(query)` to an LLM, the model can be manipulated by malicious user inputs to bypass your structural intent, alter the SQL syntax, or query highly sensitive tables it should never see.
+
+> ***The Architectural Pivot:*** *When underlying data systems cannot enforce granular data ownership rules, we must shift the Policy Decision Point (PDP) away from the database and place it squarely inside our remote MCP server. The MCP server stops being a passive translator and becomes a strict, policy-enforcing security gatekeeper.*
+
+## **Building the Gatekeeper Pattern**
+
+Implementing this pattern means decoupling *authentication* (who the user is) from *authorisation* (what data they are allowed to see). Here is how you build this flow inside your remote HTTP/SSE MCP server.
+
+
+<Figure
+  src={middleTierImg}
+  alt="Middle-Tier Policy Enforcement MCP Pattern"
+  caption="Image 1: Middle-Tier Policy Enforcement MCP Pattern"
+/>
+
+### Step 1: Lock the Front Door (No Raw SQL Tools)
+
+Never give the LLM the ability to write raw database queries. Instead, abstract your data warehouse tables into rigid, typed, functional tools.
+
+*   ❌ Vulnerable: `execute_query(sql="SELECT * FROM sales")`
+    
+*   ✅ Secure: `get_regional_sales(region="US")`
+    
+
+By forcing the LLM to provide strict, predefined parameters rather than raw code, your MCP server retains total control over the query structure. The LLM changes from a code generator to a parameter supplier.
+
+### **Step 2: Extract the Identity (Token Verification)**
+
+When the AI client communicates with your remote HTTP/SSE MCP server, it must forward the user’s authenticated OAuth 2.1 JWT Access Token in the headers.
+
+Your MCP server intercepts this bearer token and validates its cryptographic signature against your central Identity Provider (like Okta, Auth0, or Keycloak). Because this is a decoupled architecture, the server safely extracts user identity claims (like user ID or email) entirely from the validated token without constantly querying the database for authentication.
+
+### **Step 3: Enforce Attribute-Based Access Control (ABAC)**
+
+Before hitting DWH, your MCP server runs an internal authorisation check using an Attribute-Based Access Control (ABAC) strategy. It matches the user claims extracted from the token against the resource parameters requested by the tool.
+
+<Mermaid code={`
+%%{init: { 'look': 'handDrawn', 'theme': 'neutral' }}%%
+flowchart TD
+    A["Incoming Request<br>+ JWT Token"]
+    B["Extract Identity Claims<br>user_email:<br>alice@company.com"]
+    C["Evaluate ABAC Policies<br>Does 'alice' have access to<br>region = 'US'?"]
+    D["Execute Parameterized<br>Snowflake Query"]
+    E["Raise Strict<br>Permission Error"]
+    A --> B
+    B --> C
+    C -- Allowed --> D
+    C -- Denied --> E
+`} />
+
+Your server can evaluate this internally or pass the attributes to a lightweight external policy engine like Open Policy Agent (OPA):
+
+*   *System Check:* “Does [`user_alice@company.com`](mailto:user_alice@company.com) possess the attribute required to view data in the `US` region?"
+    
+*   If the policy evaluates to true, the request proceeds. If false, the server raises a strict `PermissionError` and halts execution immediately.
+    
+
+### Step 4: Parameterised Execution (No SQL Injection)
+
+If authorised, your code programmatically inserts the validated parameters into a hardcoded SQL template using bind variables (%s or ?).
+
+```javascript
+# A secure, parameterized implementation snippet
+cursor.execute(
+    "SELECT total_revenue FROM sales_summary WHERE region = %s", 
+    (validated_region_parameter,)
+)
+```
+
+This completely eliminates standard SQL injection vectors, ensuring that whatever data the LLM attempts to pass as a parameter is treated strictly as a string literal, never as executable SQL commands.
+
+## **Mandatory Enterprise Guardrails: Robust Middle-Tier Auditing**
+
+Because DWH (Snowflake) only sees queries originating from your central MCP server’s service account, downstream database logs suffer from “identity loss.” Your database logs will show the exact same user account for every query.
+
+Therefore, your MCP server must maintain its own tamper-proof, structured audit logs. Every tool invocation must explicitly map the user’s identity to the exact parameter payloads and generated queries to comply with enterprise tracking standards.
+
+## **The Reality Check: Trade-offs & Limitations**
+
+While highly effective for systems lacking native row-level security, architects must plan around these real-world constraints:
+
+*   **Maintenance Overhead:** Your engineering team now owns and maintains a custom permission mapping layer inside the MCP server codebase. If business data structures or organisational roles change, your gateway logic must evolve with them.
+    
+*   **Performance Milliseconds:** Performing cryptographic token validation, policy lookups, and parameter sanitisation on every single tool execution adds minimal latency to the user interaction loop.
+    
+*   **Data Synchronisation Lags:** If user permissions change in your primary HR or Identity directory, there may be a minor propagation delay before your mid-tier gatekeeper recognises the updated authorisation boundaries.
+    
+
+Securing AI agents requires moving past the assumption that our databases are perfectly tailored for direct LLM exposure. By treating your remote MCP server as a hardened, policy-enforcing gateway, you can confidently unlock data warehouses like Snowflake for your AI applications without waiting for a multi-month database infrastructure overhaul.
+
+* * *
