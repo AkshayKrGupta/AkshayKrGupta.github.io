@@ -264,22 +264,46 @@ Standard GitHub-Flavored Markdown (GFM) tables are automatically styled with res
 
 ## 8. Media & Visual Assets
 
-<Callout type="info" title="Asset Path Tip">
-  Files placed in the `public/` directory (e.g. `public/diagram.png`) are served directly from the root URL `/diagram.png` without including the `/public` prefix.
+<Callout type="tip" title="Automatic WebP Compression">
+  Importing images directly from your article folder allows Astro to automatically convert them into lightweight, next-gen **WebP** formats with responsive srcsets at build time!
 </Callout>
 
-### A. Images with Captions (`<Figure />`)
+### A. Collocated Images with `<Figure />` (Recommended)
+
+Place your image (e.g. `workflow-diagram.png`) directly in your article's folder alongside `index.mdx`:
+
 ```mdx
 import Figure from '../../../components/mdx/Figure.astro';
+import diagramImg from './workflow-diagram.png';
 
 <Figure
-  src="/profile.jpg"
+  src={diagramImg}
   alt="System Diagram Preview"
   caption="Figure 1: High-level overview of distributed ledger boundaries."
 />
 ```
 
-### B. Responsive YouTube Embed (`<YouTubeVideo />`)
+### B. Standard Markdown Collocated Images
+
+You can also use standard Markdown syntax without importing:
+
+```markdown
+![Figure 1: High-level overview of distributed ledger boundaries](./workflow-diagram.png)
+```
+
+### C. Static Assets from `public/`
+
+For global assets placed inside the `public/` directory (e.g. `public/profile.jpg`), reference them using a root absolute path:
+
+```mdx
+<Figure
+  src="/profile.jpg"
+  alt="Global Portrait Preview"
+  caption="Figure 2: Global public asset example."
+/>
+```
+
+### D. Responsive YouTube Embed (`<YouTubeVideo />`)
 ```mdx
 import YouTubeVideo from '../../../components/mdx/YouTubeVideo.astro';
 
