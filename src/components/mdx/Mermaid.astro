@@ -213,12 +213,18 @@ const { code } = Astro.props;
 
         const code = diagram.getAttribute('data-mermaid-code') || diagram.innerText;
         const id = `mermaid-svg-${Date.now()}-${i}`;
-        const { svg } = await mermaid.render(id, code.trim());
-        diagram.innerHTML = svg;
-        diagram.setAttribute('data-processed', 'true');
+        try {
+          const { svg } = await mermaid.render(id, code.trim());
+          diagram.innerHTML = svg;
+          diagram.setAttribute('data-processed', 'true');
+        } catch (diagError) {
+          console.warn(`Mermaid render failed on diagram ${i}:`, diagError);
+          diagram.innerHTML = `<pre class="mermaid-error" style="color: var(--color-accent); font-size: 11px; padding: 8px; text-align: left; overflow: auto;">${code.trim()}</pre>`;
+          diagram.setAttribute('data-processed', 'true');
+        }
       }
     } catch (e) {
-      console.warn('Failed to render Mermaid diagram:', e);
+      console.warn('Failed to load Mermaid library:', e);
     }
 
     // 2. Attach Interactive Zoom Controls
