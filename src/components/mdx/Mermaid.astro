@@ -161,24 +161,40 @@ const { code } = Astro.props;
   }
 
   .mermaid-canvas {
+    width: 100%;
     transform-origin: center center;
     transition: transform 0.15s ease-out;
-    display: inline-flex;
+    display: flex;
     justify-content: center;
+    align-items: center;
   }
 
   .mermaid-diagram {
+    width: 100%;
     text-align: center;
     font-size: var(--text-sm);
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .mermaid-diagram :global(svg) {
-    max-width: 100% !important;
+    width: auto !important;
+    max-width: 75% !important;
+    max-height: 520px;
     height: auto !important;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 768px) {
+    .mermaid-diagram :global(svg) {
+      max-width: 95% !important;
+    }
   }
 
   .mermaid-wrapper.is-fullscreen .mermaid-diagram :global(svg) {
-    max-width: none !important;
+    max-width: 90% !important;
+    max-height: 85vh !important;
   }
 </style>
 
@@ -189,12 +205,17 @@ const { code } = Astro.props;
 
     // 1. Render Mermaid SVGs
     try {
-      const mermaid = (await import('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs')).default;
+      const mermaid = (await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')).default;
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
       mermaid.initialize({
         startOnLoad: false,
         theme: isDark ? 'dark' : 'neutral',
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: 'basis',
+        },
         themeVariables: {
           fontFamily: 'JetBrains Mono, monospace',
           fontSize: '13px',
@@ -216,6 +237,11 @@ const { code } = Astro.props;
         try {
           const { svg } = await mermaid.render(id, code.trim());
           diagram.innerHTML = svg;
+          const renderedSvg = diagram.querySelector('svg');
+          if (renderedSvg) {
+            renderedSvg.style.maxWidth = '75%';
+            renderedSvg.style.height = 'auto';
+          }
           diagram.setAttribute('data-processed', 'true');
         } catch (diagError) {
           console.warn(`Mermaid render failed on diagram ${i}:`, diagError);
