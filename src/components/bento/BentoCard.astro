@@ -1,0 +1,25 @@
+---
+// BentoCard.astro
+interface Props {
+  id?: string;
+  variant?: 'flat' | 'raised' | 'interactive';
+  colSpan?: '12' | '8' | '7' | '6' | '5' | '4' | '3';
+  rowSpan?: '1' | '2';
+  class?: string;
+}
+
+const {
+  id,
+  variant = 'flat',
+  colSpan = '12',
+  rowSpan = '1',
+  class: className = '',
+} = Astro.props;
+
+const spanClass = `col-span-${colSpan} ${rowSpan === '2' ? 'row-span-2' : ''}`;
+const variantClass = `surface-${variant} ${variant === 'interactive' ? 'surface-interactive' : ''}`;
+---
+
+<section id={id} class={`bento-card ${spanClass} ${variantClass} ${className}`}>
+  <slot />
+</section>

@@ -1,0 +1,195 @@
+---
+import { site } from '../../data/site';
+
+interface PostRef {
+  slug: string;
+  data: {
+    title: string;
+  };
+}
+
+interface Props {
+  prevPost?: PostRef;
+  nextPost?: PostRef;
+}
+
+const { prevPost, nextPost } = Astro.props;
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="post-article-footer">
+  <!-- Author Attribution Box -->
+  <div class="post-author-box">
+    <div class="author-avatar font-mono">AG</div>
+    <div class="author-info">
+      <h4 class="author-name font-mono">{site.name}</h4>
+      <p class="author-bio text-muted">{site.shortBio}</p>
+    </div>
+  </div>
+
+  <!-- Editorial Disclaimer & Copyright Notice -->
+  <div class="post-disclaimer-box">
+    <div class="disclaimer-header">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="disclaimer-icon">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      <span class="disclaimer-title font-mono">Editorial Disclaimer &amp; Copyright</span>
+    </div>
+    <p class="disclaimer-text text-muted">
+      The technical analyses, design patterns, and opinions expressed in this publication are solely my own and do not represent the views, positions, or strategies of my employer or clients.
+    </p>
+    <p class="disclaimer-copy text-muted">
+      &copy; {currentYear} {site.name}. All rights reserved. Original content and architecture diagrams may not be reproduced or republished without prior written permission. Brief excerpts and citations with explicit canonical attribution and backlinks are welcome.
+    </p>
+  </div>
+
+  <!-- Article Pagination Navigation -->
+  <div class="post-pagination-nav">
+    {prevPost ? (
+      <a href={`/blog/${prevPost.slug}/`} class="nav-prev-link">
+        <span class="pagination-kicker font-mono">&larr; Previous Article</span>
+        <span class="pagination-title">{prevPost.data.title}</span>
+      </a>
+    ) : <div />}
+
+    {nextPost && (
+      <a href={`/blog/${nextPost.slug}/`} class="nav-next-link">
+        <span class="pagination-kicker font-mono">Next Article &rarr;</span>
+        <span class="pagination-title">{nextPost.data.title}</span>
+      </a>
+    )}
+  </div>
+</footer>
+
+<style>
+  .post-article-footer {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .post-author-box {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-neu-sm);
+  }
+
+  .author-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background-color: var(--color-accent);
+    color: var(--color-accent-contrast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.125rem;
+    flex-shrink: 0;
+  }
+
+  .author-name {
+    font-size: var(--text-sm);
+    font-weight: 700;
+  }
+
+  .author-bio {
+    font-size: var(--text-xs);
+    line-height: var(--leading-normal);
+    margin-top: 2px;
+  }
+
+  /* Disclaimer Box */
+  .post-disclaimer-box {
+    padding: var(--space-4) var(--space-5);
+    background-color: var(--color-surface-sunken);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .disclaimer-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-subtle);
+  }
+
+  .disclaimer-icon {
+    flex-shrink: 0;
+  }
+
+  .disclaimer-title {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .disclaimer-text,
+  .disclaimer-copy {
+    font-size: 0.75rem;
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Pagination Navigation */
+  .post-pagination-nav {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+  }
+
+  @media (min-width: 640px) {
+    .post-pagination-nav {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .nav-prev-link,
+  .nav-next-link {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--space-4);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+  }
+
+  .nav-next-link {
+    text-align: right;
+  }
+
+  .nav-prev-link:hover,
+  .nav-next-link:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-neu-md);
+  }
+
+  .pagination-kicker {
+    font-size: var(--text-xs);
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .pagination-title {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-text);
+  }
+</style>

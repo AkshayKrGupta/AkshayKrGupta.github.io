@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ArticleCard from '../../../components/blog/ArticleCard.astro';
+import Icon from '../../../components/common/Icon.astro';
+import { site } from '../../../data/site';
+import { getPublishedPosts, routes } from '../../../utils/blog';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const allTags = new Set<string>();
+
+  posts.forEach((post) => {
+    post.data.tags.forEach((tag) => allTags.add(tag));
+  });
+
+  return Array.from(allTags).map((tag) => {
+    const filteredPosts = posts.filter((post) => post.data.tags.includes(tag));
+    return {
+      params: { tag },
+      props: { posts: filteredPosts },
+    };
+  });
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+
+<BaseLayout
+  title={`#${tag} — Technical Articles — ${site.name}`}
+  description={`Technical articles tagged with #${tag}`}
+>
+  <div class="page-container tag-archive-container">
+    <header class="tag-archive-header">
+      <a href={routes.blog} class="back-link font-mono">
+        <Icon name="arrow-left" size={14} />
+        <span>All Articles</span>
+      </a>
+
+      <div class="tag-title-wrap">
+        <p class="swiss-kicker">Topic Archive</p>
+        <h1 class="swiss-heading-1">#{tag}</h1>
+        <p class="text-muted">Showing {posts.length} {posts.length === 1 ? 'article' : 'articles'} tagged with #{tag}</p>
+      </div>
+    </header>
+
+    <div class="articles-archive">
+      {posts.map((post) => (
+        <ArticleCard post={post} variant="standard" />
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .tag-archive-container {
+    padding-top: var(--space-7);
+    padding-bottom: var(--space-10);
+    max-width: 840px;
+  }
+
+  .tag-archive-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-xs);
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .tag-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .articles-archive {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+</style>

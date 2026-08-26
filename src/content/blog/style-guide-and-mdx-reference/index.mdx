@@ -1,0 +1,298 @@
+---
+title: "The Technical Author's Guide & MDX Reference: Do's, Don'ts & Components"
+description: "A complete authoring style guide, architectural diagramming reference, and interactive MDX component showcase for publishing technical articles."
+pubDate: 2026-08-26
+author: "Akshay K Gupta"
+tags:
+  - architecture
+  - style-guide
+  - mdx
+  - documentation
+draft: true
+featured: false
+---
+
+import Callout from '../../../components/mdx/Callout.astro';
+import Mermaid from '../../../components/mdx/Mermaid.astro';
+import Figure from '../../../components/mdx/Figure.astro';
+import YouTubeVideo from '../../../components/mdx/YouTubeVideo.astro';
+
+> **Author Reference Note:** This article is marked as `draft: true`. It will **never** appear in the public `/blog/` archive, RSS feed, search indexes, or sitemap. Keep it as your definitive cheatsheet whenever writing new articles!
+
+---
+
+## 1. Frontmatter Specification & Schema
+
+Every article must start with YAML frontmatter bounded by triple dashes (`---`). Here is the complete list of attributes:
+
+```yaml
+---
+# REQUIRED FIELDS:
+title: "Article Title (Concise & Descriptive)"
+description: "A 1-2 sentence compelling summary for search snippets, social cards, and article listings."
+pubDate: 2026-08-26
+
+# OPTIONAL FIELDS:
+updatedDate: 2026-08-27          # Shown if the article receives a major revision
+author: "Akshay K Gupta"         # Defaults automatically to site.name if omitted
+tags:
+  - enterprise-architecture      # Lowercase kebab-case tags
+  - genai
+  - distributed-systems
+heroImage: "/profile.jpg"        # Optional header hero image
+draft: true                      # Set to true while writing; set to false when ready to publish!
+featured: false                  # Set to true to highlight the post in featured sections
+canonicalUrl: "https://..."      # If republishing an article originally posted elsewhere
+series: "MCP In Practice"        # Optional series grouping identifier
+---
+```
+
+---
+
+## 2. Technical Writing: Do's and Don'ts
+
+<Callout type="tip" title="Editorial Philosophy">
+  Write about the parts nobody puts in the architecture diagram: the trade-offs, the edge cases, the governance constraints, and the *why* behind design decisions.
+</Callout>
+
+### Quick Rules Matrix
+
+| Category | ✅ Do's | ❌ Don'ts |
+| :--- | :--- | :--- |
+| **Document Structure** | Start the article body with `## 1. Section Title` (H2) and `### Sub-section` (H3). | Never use `# Title` (H1) in markdown body—the layout automatically renders the frontmatter `title` as `<h1>`. |
+| **Table of Contents** | Use clean, semantic headings. The sticky desktop TOC is generated automatically from `##` and `###`. | Don't manually type out a "Table of Contents" list in text. |
+| **Tags & Topics** | Use lowercase kebab-case (e.g. `mcp`, `genai`, `fintech`, `distributed-systems`). | Don't mix casing (`GenAI` vs `genai`) as it creates fragmented tag pages. |
+| **Diagrams** | Use dynamic `<Mermaid />` components or ASCII boxes. | Don't screenshot diagrams or upload heavy unreadable image files. |
+| **Code Snippets** | Always specify language syntax (`typescript`, `go`, `sql`, `yaml`, `bash`). | Don't write raw unhighlighted code blocks without language tags. |
+| **Draft Management** | Keep `draft: true` while writing and verifying locally. | Don't deploy unfinished drafts with `draft: false`. |
+
+---
+
+## 3. Interactive Callout Components
+
+Callouts are used to highlight critical notes, architectural warnings, pro-tips, and gotchas. Import the component at the top of your `.mdx` file:
+
+```mdx
+import Callout from '../../../components/mdx/Callout.astro';
+```
+
+### Info Note (`type="info"`)
+<Callout type="info" title="Architecture Note">
+  Asynchronous event streaming decouples producer transaction lifecycles from downstream consumers.
+</Callout>
+
+### Tip (`type="tip"`)
+<Callout type="tip" title="Production Pro-Tip">
+  Always assign explicit partition keys when publishing to Kafka topics to preserve total ordering per entity.
+</Callout>
+
+### Warning (`type="warning"`)
+<Callout type="warning" title="Consistency Trade-off">
+  Read-replicas introduce eventual consistency lag. Never serve critical balance checks from secondary replicas.
+</Callout>
+
+### Important / Danger (`type="important"`)
+<Callout type="important" title="Regulatory Guardrail">
+  LLM tool executions in regulated environments must be cryptographically signed and recorded in an immutable audit ledger.
+</Callout>
+
+---
+
+## 4. Native Mermaid Diagrams
+
+Mermaid diagrams render directly in the browser as interactive SVG graphics with full Light/Dark mode responsiveness. Import the component:
+
+```mdx
+import Mermaid from '../../../components/mdx/Mermaid.astro';
+```
+
+### Example A: Sequence Diagram (Request Lifecycle)
+
+<Mermaid code={`
+sequenceDiagram
+  autonumber
+  actor User
+  participant Edge as API Gateway
+  participant Auth as Auth & Governance
+  participant Svc as Core Payment Engine
+  participant Queue as Kafka Cluster
+  participant DB as Immutable Ledger
+
+  User->>Edge: POST /v1/settlements (Idempotency-Key)
+  Edge->>Auth: Validate JWT & MCP Tool Permissions
+  Auth-->>Edge: Access Granted
+  Edge->>Svc: Execute Transaction
+  Svc->>DB: ACID Write (Pending)
+  Svc->>Queue: Emit "SettlementInitiated"
+  Queue-->>Svc: ACK
+  Svc-->>Edge: 202 Accepted
+  Edge-->>User: Settlement Receipt JSON
+`} />
+
+### Example B: Architecture Flowchart & State Transitions
+
+<Mermaid code={`
+flowchart TD
+  A[Incoming Client Request] --> B{Valid Auth Token?}
+  B -- No --> C[401 Unauthorized]
+  B -- Yes --> D{Rate Limit OK?}
+  D -- Exceeded --> E[429 Too Many Requests]
+  D -- Within Limit --> F[Route to MCP Tool Handler]
+  F --> G[(PostgreSQL Primary)]
+  F --> H[(Redis Cache Cluster)]
+  G -. Read Replica .-> I[(Analytics DB)]
+`} />
+
+---
+
+## 5. Multi-Language Code Blocks
+
+Code blocks use **Shiki** with GitHub Dimmed theme for high-contrast, zero-flicker readability.
+
+### TypeScript / Node.js
+```typescript
+interface MCPToolDefinition {
+  name: string;
+  description: string;
+  inputSchema: {
+    type: 'object';
+    properties: Record<string, unknown>;
+    required: string[];
+  };
+  handler: (args: Record<string, unknown>) => Promise<ToolResult>;
+}
+
+export async function executeTool(tool: MCPToolDefinition, input: unknown): Promise<ToolResult> {
+  const validated = validateSchema(tool.inputSchema, input);
+  return await tool.handler(validated);
+}
+```
+
+### Go (Distributed Systems)
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"time"
+)
+
+type Node struct {
+	ID        string
+	IsLeader  bool
+	Heartbeat time.Duration
+}
+
+func (n *Node) RunElectionLoop(ctx context.Context) error {
+	ticker := time.NewTicker(n.Heartbeat)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-ticker.C:
+			if !n.IsLeader {
+				fmt.Printf("Node %s starting leader election quorum...\n", n.ID)
+			}
+		}
+	}
+}
+```
+
+### SQL & Schema Migrations
+```sql
+CREATE TABLE IF NOT EXISTS settlements (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  account_id UUID NOT NULL REFERENCES accounts(id),
+  amount_cents BIGINT NOT NULL CHECK (amount_cents > 0),
+  currency VARCHAR(3) NOT NULL DEFAULT 'USD',
+  status VARCHAR(24) NOT NULL DEFAULT 'PENDING',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_settlements_account_created ON settlements(account_id, created_at DESC);
+```
+
+---
+
+## 6. ASCII Architecture Diagrams
+
+When you want instant visual clarity without external scripts, ASCII diagrams inside triple backticks work brilliantly:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      API GATEWAY LAYER                      │
+│        (Rate Limiting • JWT Validation • TLS Termination)   │
+└──────────────────────────────┬──────────────────────────────┘
+                               │
+               ┌───────────────┴───────────────┐
+               ▼                               ▼
+┌─────────────────────────────┐ ┌─────────────────────────────┐
+│    Payment Core Service     │ │     Audit & Compliance      │
+│   (Idempotent Processing)   │ │    (Immutable Event Log)    │
+└──────────────┬──────────────┘ └──────────────┬──────────────┘
+               │                               │
+               ▼                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  APACHE KAFKA EVENT BUS                     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 7. Tables & Data Comparisons
+
+Standard GitHub-Flavored Markdown (GFM) tables are automatically styled with responsive horizontal scrolling, zebra striping, and theme borders.
+
+### Alignment Syntax:
+- Left align: `:---`
+- Center align: `:---:`
+- Right align: `---:`
+
+### Example: Architectural Protocol Trade-Offs Table
+
+| Protocol / Pattern | Latency (p99) | Delivery Guarantee | Best Suited For | Governance Tier |
+| :--- | :---: | :--- | :--- | :---: |
+| **REST (HTTPS)** | ~45ms | At-most-once / Synchronous | Public ingress & external clients | Tier 1 |
+| **gRPC (HTTP/2)** | ~4ms | Synchronous RPC | Internal inter-service communication | Tier 1 |
+| **Kafka (Broker)** | ~12ms | At-least-once (ordered partition) | Event sourcing & core ledger logs | Tier 2 |
+| **WebSocket** | `<1ms` | Full-duplex persistent stream | Real-time market tick streams | Tier 2 |
+
+---
+
+## 8. Media & Visual Assets
+
+<Callout type="info" title="Asset Path Tip">
+  Files placed in the `public/` directory (e.g. `public/diagram.png`) are served directly from the root URL `/diagram.png` without including the `/public` prefix.
+</Callout>
+
+### A. Images with Captions (`<Figure />`)
+```mdx
+import Figure from '../../../components/mdx/Figure.astro';
+
+<Figure
+  src="/profile.jpg"
+  alt="System Diagram Preview"
+  caption="Figure 1: High-level overview of distributed ledger boundaries."
+/>
+```
+
+### B. Responsive YouTube Embed (`<YouTubeVideo />`)
+```mdx
+import YouTubeVideo from '../../../components/mdx/YouTubeVideo.astro';
+
+<YouTubeVideo id="dQw4w9WgXcQ" title="Architecture Keynote Presentation" />
+```
+
+---
+
+## 9. Summary Checklist Before Publishing
+
+When you finish drafting your article:
+1. Verify frontmatter: `title`, `description`, `tags`, and `pubDate`.
+2. Change `draft: true` to `draft: false`.
+3. Run `npm run build` to verify that there are zero MDX syntax errors.
+4. Push your commit to GitHub to trigger automated deployment!
+

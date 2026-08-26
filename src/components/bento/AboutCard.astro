@@ -1,0 +1,112 @@
+---
+import { site } from '../../data/site';
+import BentoCard from './BentoCard.astro';
+import Badge from '../common/Badge.astro';
+import Icon from '../common/Icon.astro';
+
+interface Props {
+  colSpan?: '12' | '5' | '4';
+}
+
+const { colSpan = '4' } = Astro.props;
+---
+
+<BentoCard id="about" variant="flat" colSpan={colSpan} class="about-card">
+  <div class="about-header">
+    <p class="swiss-kicker">Background &amp; Focus</p>
+    <h3 class="swiss-heading-3">Architecture &amp; Strategy</h3>
+  </div>
+
+  <div class="about-content">
+    <p class="about-para text-muted">
+      Over a decade architecting enterprise platforms taught me that the interesting problems are rarely just technical—they are the trade-offs, governance questions, and the <em>"why did we build it this way"</em> decisions.
+    </p>
+
+    <div class="focus-pills">
+      <Badge variant="accent" size="sm">Enterprise FinTech</Badge>
+      <Badge variant="neutral" size="sm">GenAI &amp; MCP</Badge>
+      <Badge variant="neutral" size="sm">AI Governance</Badge>
+      <Badge variant="neutral" size="sm">Distributed Systems</Badge>
+    </div>
+  </div>
+
+  <div class="about-meta">
+    {site.location && (
+      <div class="meta-row">
+        <span class="swiss-label">Location</span>
+        <span class="meta-val font-mono">{site.location}</span>
+      </div>
+    )}
+    <div class="meta-row">
+      <span class="swiss-label">LinkedIn</span>
+      <a href={site.social.linkedin} target="_blank" rel="noopener noreferrer" class="meta-link font-mono">
+        <span>Connect</span>
+        <Icon name="external-link" size={12} />
+      </a>
+    </div>
+  </div>
+</BentoCard>
+
+<style>
+  .about-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-5);
+  }
+
+  .about-header {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .about-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .about-para {
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+  }
+
+  .focus-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: var(--space-2);
+  }
+
+  .about-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: var(--text-xs);
+  }
+
+  .meta-val {
+    color: var(--color-text);
+  }
+
+  .meta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .meta-link:hover {
+    text-decoration: underline;
+  }
+</style>

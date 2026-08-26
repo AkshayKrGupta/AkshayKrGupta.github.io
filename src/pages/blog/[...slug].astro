@@ -1,0 +1,62 @@
+---
+import BlogPostLayout from '../../layouts/BlogPostLayout.astro';
+import { getPublishedPosts, type BlogPost } from '../../utils/blog';
+
+export async function getStaticPaths() {
+  const sortedPosts = await getPublishedPosts();
+
+  return sortedPosts.map((post, index) => {
+    const prevPost = index < sortedPosts.length - 1 ? sortedPosts[index + 1] : undefined;
+    const nextPost = index > 0 ? sortedPosts[index - 1] : undefined;
+
+    // Find up to 2 related posts with shared tags
+    const relatedPosts = sortedPosts
+      .filter((p) => p.slug !== post.slug)
+      .map((p) => {
+        const sharedTags = p.data.tags.filter((t) => post.data.tags.includes(t));
+        return { post: p, score: sharedTags.length };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 2)
+      .map((item) => item.post);
+
+    return {
+      params: { slug: post.slug },
+      props: {
+        post,
+        prevPost,
+        nextPost,
+        relatedPosts,
+      },
+    };
+  });
+}
+
+interface Props {
+  post: BlogPost;
+  prevPost?: BlogPost;
+  nextPost?: BlogPost;
+  relatedPosts?: BlogPost[];
+}
+
+const { post, prevPost, nextPost, relatedPosts = [] } = Astro.props;
+const { Content, headings } = await post.render();
+---
+
+<BlogPostLayout
+  title={post.data.title}
+  description={post.data.description}
+  pubDate={post.data.pubDate}
+  updatedDate={post.data.updatedDate}
+  author={post.data.author}
+  tags={post.data.tags}
+  heroImage={post.data.heroImage}
+  headings={headings}
+  prevPost={prevPost}
+  nextPost={nextPost}
+  relatedPosts={relatedPosts}
+  rawContent={post.body}
+>
+  <Content />
+</BlogPostLayout>

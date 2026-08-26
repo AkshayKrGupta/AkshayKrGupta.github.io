@@ -1,0 +1,206 @@
+---
+import { site } from '../../data/site';
+import { footerNavItems } from '../../data/navigation';
+import Icon from './Icon.astro';
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="page-container footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <span class="brand-badge">AG</span>
+          <span class="brand-name">{site.shortName}</span>
+        </div>
+        <p class="footer-tagline">{site.tagline}</p>
+        <p class="footer-status">
+          <span class="status-indicator"></span>
+          <span>{site.status.text}</span>
+        </p>
+      </div>
+
+      <nav class="footer-nav" aria-label="Footer Navigation">
+        <ul class="footer-links">
+          {footerNavItems.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="footer-link"
+                target={item.external ? '_blank' : undefined}
+                rel={item.external ? 'noopener noreferrer' : undefined}
+              >
+                {item.label}
+                {item.external && (
+                  <Icon name="external-link" size={12} class="external-icon" />
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">
+        &copy; {currentYear} {site.name}. All rights reserved.
+      </p>
+      <div class="footer-social-links">
+        <a href={site.social.github} target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="GitHub">
+          GitHub
+        </a>
+        <span class="sep">&middot;</span>
+        <a href={site.social.linkedin} target="_blank" rel="noopener noreferrer" class="social-icon-link" aria-label="LinkedIn">
+          LinkedIn
+        </a>
+        <span class="sep">&middot;</span>
+        <a href="/rss.xml" target="_blank" class="social-icon-link font-mono" aria-label="RSS Feed" style="font-size: 0.75rem;">
+          RSS
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: var(--space-8) 0 var(--space-6);
+    transition: background-color var(--transition-smooth), border-color var(--transition-smooth);
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .footer-top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    justify-content: space-between;
+  }
+
+  @media (min-width: 768px) {
+    .footer-top {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: 400px;
+  }
+
+  .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 700;
+    font-size: var(--text-base);
+    color: var(--color-text);
+  }
+
+  .brand-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-accent);
+    color: var(--color-accent-contrast);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.75rem;
+  }
+
+  .footer-tagline {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .footer-status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+    margin-top: var(--space-1);
+  }
+
+  .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-success);
+    box-shadow: 0 0 6px var(--color-success);
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .footer-link:hover {
+    color: var(--color-accent);
+  }
+
+  .external-icon {
+    opacity: 0.7;
+  }
+
+  .footer-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border-subtle);
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+  }
+
+  @media (min-width: 768px) {
+    .footer-bottom {
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .footer-social-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .social-icon-link {
+    color: var(--color-text-muted);
+    transition: color var(--transition-fast);
+  }
+
+  .social-icon-link:hover {
+    color: var(--color-accent);
+  }
+
+  .sep {
+    color: var(--color-border);
+  }
+</style>

@@ -1,0 +1,215 @@
+---
+import { site } from '../../data/site';
+import BentoCard from './BentoCard.astro';
+import Icon from '../common/Icon.astro';
+
+interface Props {
+  colSpan?: '12' | '8' | '7';
+}
+
+const { colSpan = '8' } = Astro.props;
+---
+
+<BentoCard variant="raised" colSpan={colSpan} class="hero-card">
+  <!-- Top: Status Indicator Pill -->
+  <div class="hero-header">
+    <span class="neu-pill status-pill">
+      <span class="status-dot"></span>
+      <span class="status-text">{site.status.text}</span>
+    </span>
+  </div>
+
+  <!-- Center: Integrated Author Identity Lockup -->
+  <div class="hero-identity">
+    {site.profile.image && (
+      <div class="hero-avatar-wrapper">
+        <img
+          src={site.profile.image}
+          alt={site.profile.alt}
+          class="hero-avatar"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+    )}
+    <div class="hero-name-stack">
+      <p class="swiss-kicker">Enterprise Architecture &bull; AI &bull; FinTech</p>
+      <h1 class="hero-name">{site.name}</h1>
+      <h2 class="hero-title">{site.title}</h2>
+    </div>
+  </div>
+
+  <!-- Narrative Tagline -->
+  <div class="hero-narrative">
+    <p class="hero-tagline">{site.tagline}</p>
+  </div>
+
+  <!-- Bottom: Call to Action Buttons -->
+  <div class="hero-actions">
+    <a href="#projects" class="neu-button neu-button-primary">
+      <span>Explore Projects</span>
+      <Icon name="arrow-right" size={16} />
+    </a>
+    <a href="/blog/" class="neu-button neu-button-secondary">
+      <span>Read Technical Articles</span>
+      <Icon name="arrow-right" size={16} />
+    </a>
+  </div>
+</BentoCard>
+
+<style>
+  .hero-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .hero-card {
+      gap: var(--space-6);
+      padding: var(--space-7) var(--space-8);
+    }
+  }
+
+  .hero-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--space-3);
+  }
+
+  @media (min-width: 768px) {
+    .hero-header {
+      margin-bottom: var(--space-4);
+    }
+  }
+
+  .status-pill {
+    align-self: flex-start;
+    font-size: var(--text-xs);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-success);
+    box-shadow: 0 0 6px var(--color-success);
+    flex-shrink: 0;
+  }
+
+  /* Identity Lockup (Avatar + Name Stack) */
+  .hero-identity {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: var(--space-4);
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .hero-identity {
+      gap: var(--space-5);
+    }
+  }
+
+  .hero-avatar-wrapper {
+    position: relative;
+    width: 76px !important;
+    height: 76px !important;
+    min-width: 76px !important;
+    min-height: 76px !important;
+    max-width: 76px !important;
+    max-height: 76px !important;
+    aspect-ratio: 1 / 1 !important;
+    flex-shrink: 0 !important;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 2px solid var(--color-border);
+    box-shadow: var(--shadow-neu-sm);
+    background-color: var(--color-surface-sunken);
+  }
+
+  @media (min-width: 768px) {
+    .hero-avatar-wrapper {
+      width: 92px !important;
+      height: 92px !important;
+      min-width: 92px !important;
+      min-height: 92px !important;
+      max-width: 92px !important;
+      max-height: 92px !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-avatar-wrapper {
+      width: 100px !important;
+      height: 100px !important;
+      min-width: 100px !important;
+      min-height: 100px !important;
+      max-width: 100px !important;
+      max-height: 100px !important;
+    }
+  }
+
+  .hero-avatar {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover !important;
+    object-position: center 15% !important;
+    display: block !important;
+    transition: transform var(--transition-smooth);
+  }
+
+  .hero-avatar-wrapper:hover .hero-avatar {
+    transform: scale(1.06);
+  }
+
+  .hero-name-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .hero-name {
+    font-size: clamp(1.75rem, 1.4rem + 1.6vw, 2.75rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    color: var(--color-text);
+  }
+
+  .hero-title {
+    font-size: clamp(0.9375rem, 0.85rem + 0.4vw, 1.25rem);
+    font-weight: 600;
+    color: var(--color-accent);
+    letter-spacing: -0.015em;
+  }
+
+  /* Narrative Tagline */
+  .hero-narrative {
+    padding-top: var(--space-1);
+  }
+
+  .hero-tagline {
+    font-size: var(--text-base);
+    font-weight: 500;
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+    max-width: 620px;
+  }
+
+  /* Actions */
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+  }
+</style>

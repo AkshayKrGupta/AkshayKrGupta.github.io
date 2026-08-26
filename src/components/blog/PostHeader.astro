@@ -1,0 +1,239 @@
+---
+import { formatDate } from '../../utils/formatters';
+import Badge from '../common/Badge.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  author: string;
+  tags: string[];
+  readingTime: string;
+  heroImage?: string;
+}
+
+const {
+  title,
+  description,
+  pubDate,
+  updatedDate,
+  author,
+  tags,
+  readingTime,
+  heroImage,
+} = Astro.props;
+---
+
+<header class="post-header">
+  <div class="post-kicker-row">
+    <a href="/blog/" class="back-link font-mono">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m15 18-6-6 6-6"></path>
+      </svg>
+      <span>Technical Articles</span>
+    </a>
+    {tags.length > 0 && (
+      <span class="first-tag font-mono">/ #{tags[0]}</span>
+    )}
+  </div>
+
+  <h1 class="post-title swiss-heading-1">{title}</h1>
+  <p class="post-description text-muted">{description}</p>
+
+  <div class="post-metadata-bar font-mono">
+    <div class="meta-item">
+      <span class="meta-label">Published:</span>
+      <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+    </div>
+    {updatedDate && (
+      <div class="meta-item">
+        <span class="meta-label">Updated:</span>
+        <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+      </div>
+    )}
+    <div class="meta-item">
+      <span class="meta-label">Read:</span>
+      <span>{readingTime}</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Author:</span>
+      <span>{author}</span>
+    </div>
+  </div>
+
+  <div class="post-tags-row">
+    <div class="post-tags-container">
+      {tags.map((tag) => (
+        <a href={`/blog/tags/${tag}/`}>
+          <Badge variant="neutral" size="sm">#{tag}</Badge>
+        </a>
+      ))}
+    </div>
+
+    <div class="post-actions font-mono">
+      <button id="copy-article-btn" class="neu-pill action-pill" aria-label="Copy article link" title="Copy link to article">
+        <svg id="copy-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+        </svg>
+        <span id="copy-text">Copy Link</span>
+      </button>
+      <a
+        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="neu-pill action-pill"
+        aria-label="Share on LinkedIn"
+        title="Share on LinkedIn"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+          <rect width="4" height="12" x="2" y="9"></rect>
+          <circle cx="4" cy="4" r="2"></circle>
+        </svg>
+        <span>Share</span>
+      </a>
+    </div>
+  </div>
+
+  {heroImage && (
+    <div class="post-hero-image-wrap">
+      <img src={heroImage} alt={title} class="post-hero-image" />
+    </div>
+  )}
+</header>
+
+<style>
+  .post-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-bottom: var(--space-7);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .post-kicker-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .first-tag {
+    color: var(--color-text-subtle);
+    text-transform: uppercase;
+  }
+
+  .post-title {
+    color: var(--color-text);
+  }
+
+  .post-description {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+  }
+
+  .post-metadata-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+    padding: var(--space-3) 0;
+    border-top: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .meta-label {
+    color: var(--color-text-subtle);
+  }
+
+  .post-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .post-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .post-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .action-pill {
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+  }
+
+  .action-pill:hover {
+    color: var(--color-accent);
+  }
+
+  .post-hero-image-wrap {
+    margin-top: var(--space-4);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-raised);
+  }
+
+  .post-hero-image {
+    width: 100%;
+    max-height: 480px;
+    object-fit: cover;
+  }
+</style>
+
+<script is:inline>
+  function initCopyArticleBtn() {
+    const btn = document.getElementById('copy-article-btn');
+    const textSpan = document.getElementById('copy-text');
+    if (!btn || !textSpan) return;
+
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        const orig = textSpan.textContent;
+        textSpan.textContent = 'Copied!';
+        setTimeout(() => {
+          textSpan.textContent = orig;
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy', err);
+      }
+    });
+  }
+  initCopyArticleBtn();
+  document.addEventListener('astro:after-swap', initCopyArticleBtn);
+</script>

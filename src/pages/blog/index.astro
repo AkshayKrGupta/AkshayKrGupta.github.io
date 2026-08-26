@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Badge from '../../components/common/Badge.astro';
+import ArticleCard from '../../components/blog/ArticleCard.astro';
+import { site } from '../../data/site';
+import { getPublishedPosts, getAllUniqueTags, routes } from '../../utils/blog';
+
+const sortedPosts = await getPublishedPosts();
+const allTags = await getAllUniqueTags();
+---
+
+<BaseLayout
+  title={`Technical Articles — ${site.name}`}
+  description={site.blog.description}
+>
+  <div class="page-container blog-index-container">
+    <header class="blog-index-header">
+      <p class="swiss-kicker">Publications &amp; Articles</p>
+      <h1 class="swiss-heading-1">{site.blog.name}</h1>
+      <p class="text-muted blog-desc">{site.blog.description}</p>
+
+      {allTags.length > 0 && (
+        <div class="tags-filter-bar">
+          <span class="filter-label font-mono">Topics:</span>
+          <div class="tags-list">
+            <a href={routes.blog}>
+              <Badge variant="accent" size="md">All Topics ({sortedPosts.length})</Badge>
+            </a>
+            {allTags.map((tag) => {
+              const count = sortedPosts.filter((p) => p.data.tags.includes(tag)).length;
+              return (
+                <a href={routes.tag(tag)}>
+                  <Badge variant="neutral" size="md">#{tag} ({count})</Badge>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </header>
+
+    <div class="articles-archive">
+      {sortedPosts.length === 0 ? (
+        <div class="empty-state">
+          <p class="text-muted">No technical articles published yet. Check back soon!</p>
+        </div>
+      ) : (
+        sortedPosts.map((post) => (
+          <ArticleCard post={post} variant="standard" />
+        ))
+      )}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .blog-index-container {
+    padding-top: var(--space-7);
+    padding-bottom: var(--space-10);
+    max-width: 840px;
+  }
+
+  .blog-index-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .blog-desc {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+  }
+
+  .tags-filter-bar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  @media (min-width: 640px) {
+    .tags-filter-bar {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .filter-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+    text-transform: uppercase;
+  }
+
+  .tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .articles-archive {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .empty-state {
+    padding: var(--space-8);
+    text-align: center;
+    background-color: var(--color-surface);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+  }
+</style>

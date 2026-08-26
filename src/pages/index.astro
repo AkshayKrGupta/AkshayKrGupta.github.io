@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BentoGrid from '../components/bento/BentoGrid.astro';
+import HeroCard from '../components/bento/HeroCard.astro';
+import AboutCard from '../components/bento/AboutCard.astro';
+import ExperienceCard from '../components/bento/ExperienceCard.astro';
+import ProjectsCard from '../components/bento/ProjectsCard.astro';
+import LatestPostsCard from '../components/bento/LatestPostsCard.astro';
+import SocialsCard from '../components/bento/SocialsCard.astro';
+import { site } from '../data/site';
+---
+
+<BaseLayout
+  title={`${site.name} — ${site.title}`}
+  description={site.description}
+>
+  <div class="page-container portfolio-container">
+    <BentoGrid>
+      <!-- Row 1: Hero + About -->
+      <HeroCard colSpan="8" />
+      <AboutCard colSpan="4" />
+
+      <!-- Row 2: Career Timeline (Full Width) -->
+      <ExperienceCard colSpan="12" />
+
+      <!-- Row 3: Featured Projects -->
+      <ProjectsCard colSpan="12" />
+
+      <!-- Row 4: Latest Technical Articles + Socials / Contact -->
+      <LatestPostsCard colSpan="8" />
+      <SocialsCard colSpan="4" />
+    </BentoGrid>
+  </div>
+</BaseLayout>
+
+<style>
+  .portfolio-container {
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-9);
+  }
+
+  @media (min-width: 768px) {
+    .portfolio-container {
+      padding-top: var(--space-8);
+      padding-bottom: var(--space-10);
+    }
+  }
+</style>

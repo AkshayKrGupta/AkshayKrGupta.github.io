@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BentoCard from '../components/bento/BentoCard.astro';
+import { site } from '../data/site';
+import { nowData } from '../data/now';
+---
+
+<BaseLayout
+  title={`Now — ${site.name}`}
+  description={nowData.headline}
+>
+  <div class="page-container now-page-container">
+    <header class="now-header">
+      <p class="swiss-kicker">Status &amp; Focus</p>
+      <h1 class="swiss-heading-1">What I&apos;m Doing Now</h1>
+      <p class="text-muted now-headline">{nowData.headline}</p>
+      <div class="last-updated font-mono">
+        <span>Last updated: {nowData.lastUpdated}</span>
+        <span>&bull;</span>
+        <a href="https://nownownow.com/about" target="_blank" rel="noopener noreferrer" class="now-page-info">
+          What is a /now page?
+        </a>
+      </div>
+    </header>
+
+    <div class="now-sections-grid">
+      {nowData.sections.map((section) => (
+        <BentoCard variant="raised" colSpan="12" class="now-card">
+          <h2 class="now-section-title font-mono">{section.title}</h2>
+          <ul class="now-list">
+            {section.items.map((item) => (
+              <li class="now-list-item text-muted">{item}</li>
+            ))}
+          </ul>
+        </BentoCard>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .now-page-container {
+    padding-top: var(--space-7);
+    padding-bottom: var(--space-10);
+    max-width: 840px;
+  }
+
+  .now-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .now-headline {
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+  }
+
+  .last-updated {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+    margin-top: var(--space-2);
+  }
+
+  .now-page-info {
+    color: var(--color-accent);
+  }
+
+  .now-page-info:hover {
+    text-decoration: underline;
+  }
+
+  .now-sections-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .now-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .now-section-title {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .now-list {
+    list-style-type: square;
+    padding-left: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .now-list-item {
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+  }
+</style>

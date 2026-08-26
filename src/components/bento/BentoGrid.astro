@@ -1,0 +1,12 @@
+---
+// BentoGrid.astro
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div class={`bento-grid ${className}`}>
+  <slot />
+</div>

@@ -1,0 +1,74 @@
+---
+import BentoCard from './BentoCard.astro';
+import ArticleCard from '../blog/ArticleCard.astro';
+import Icon from '../common/Icon.astro';
+import { getPublishedPosts, routes } from '../../utils/blog';
+
+interface Props {
+  colSpan?: '12' | '8' | '7' | '6';
+  maxPosts?: number;
+}
+
+const { colSpan = '8', maxPosts = 3 } = Astro.props;
+
+const allPosts = await getPublishedPosts();
+const latestPosts = allPosts.slice(0, maxPosts);
+---
+
+<BentoCard variant="flat" colSpan={colSpan} class="latest-posts-card">
+  <div class="posts-header">
+    <div>
+      <p class="swiss-kicker">Publications</p>
+      <h3 class="swiss-heading-3">Latest Technical Articles</h3>
+    </div>
+    <a href={routes.blog} class="view-all-link font-mono">
+      <span>View All Articles</span>
+      <Icon name="arrow-right" size={14} />
+    </a>
+  </div>
+
+  <div class="posts-list">
+    {latestPosts.length === 0 ? (
+      <p class="text-muted">No technical articles published yet.</p>
+    ) : (
+      latestPosts.map((post) => (
+        <ArticleCard post={post} variant="compact" headingTag="h4" />
+      ))
+    )}
+  </div>
+</BentoCard>
+
+<style>
+  .latest-posts-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .posts-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .view-all-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-accent);
+    white-space: nowrap;
+  }
+
+  .view-all-link:hover {
+    text-decoration: underline;
+  }
+
+  .posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+</style>

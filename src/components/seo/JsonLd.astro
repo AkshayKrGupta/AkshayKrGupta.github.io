@@ -1,0 +1,135 @@
+---
+import { site } from '../../data/site';
+
+interface Props {
+  type?: 'website' | 'article';
+  title?: string;
+  description?: string;
+  publishDate?: Date | string;
+  modifiedDate?: Date | string;
+  url?: string;
+  image?: string;
+  tags?: string[];
+}
+
+const {
+  type = 'website',
+  title = site.title,
+  description = site.description,
+  publishDate,
+  modifiedDate,
+  url = site.url,
+  image = `${site.url}/og-image.png`,
+  tags = [],
+} = Astro.props;
+
+// Schema for Person & WebSite (Homepage)
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${site.url}/#website`,
+      url: site.url,
+      name: `${site.name} — Solutions Architecture & Technical Articles`,
+      description: site.description,
+      publisher: {
+        '@id': `${site.url}/#person`,
+      },
+      inLanguage: 'en-US',
+    },
+    {
+      '@type': 'Person',
+      '@id': `${site.url}/#person`,
+      name: site.name,
+      jobTitle: site.title,
+      description: site.shortBio,
+      url: site.url,
+      sameAs: [site.social.github, site.social.linkedin].filter(Boolean),
+      knowsAbout: [
+        'Enterprise Architecture',
+        'Model Context Protocol (MCP)',
+        'AI in Regulated Industries',
+        'Distributed Systems & Consensus',
+        'FinTech Engineering',
+        'High-Throughput Microservices',
+        'Cloud Infrastructure & Kubernetes',
+      ],
+    },
+  ],
+};
+
+// Schema for BlogPosting & Breadcrumbs (Article pages)
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BlogPosting',
+      '@id': `${url}#article`,
+      isPartOf: {
+        '@id': `${site.url}/#website`,
+      },
+      headline: title,
+      description: description,
+      url: url,
+      image: image,
+      datePublished: publishDate ? new Date(publishDate).toISOString() : undefined,
+      dateModified: modifiedDate ? new Date(modifiedDate).toISOString() : (publishDate ? new Date(publishDate).toISOString() : undefined),
+      keywords: tags.join(', '),
+      about: tags.map((tag) => ({
+        '@type': 'Thing',
+        name: tag,
+      })),
+      author: {
+        '@type': 'Person',
+        name: site.name,
+        jobTitle: site.title,
+        url: site.url,
+        sameAs: [site.social.github, site.social.linkedin].filter(Boolean),
+      },
+      publisher: {
+        '@type': 'Person',
+        name: site.name,
+        url: site.url,
+      },
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': url,
+      },
+      speakable: {
+        '@type': 'SpeakableSpecification',
+        cssSelector: ['.post-description', '.prose-content > p:first-of-type'],
+      },
+      inLanguage: 'en-US',
+    },
+    {
+      '@type': 'BreadcrumbList',
+      '@id': `${url}#breadcrumb`,
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: site.url,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Technical Articles',
+          item: `${site.url}/blog/`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: title,
+          item: url,
+        },
+      ],
+    },
+  ],
+};
+
+const jsonLd = type === 'article' ? articleSchema : websiteSchema;
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

@@ -1,0 +1,141 @@
+---
+import type { BlogPost } from '../../utils/blog';
+import { routes } from '../../utils/blog';
+import { formatDate } from '../../utils/formatters';
+import { getReadingTime } from '../../utils/readingTime';
+import Badge from '../common/Badge.astro';
+
+interface Props {
+  post: BlogPost;
+  variant?: 'standard' | 'compact';
+  headingTag?: 'h2' | 'h3' | 'h4';
+  class?: string;
+}
+
+const {
+  post,
+  variant = 'standard',
+  headingTag = variant === 'standard' ? 'h2' : 'h4',
+  class: className = '',
+} = Astro.props;
+
+const readingTime = getReadingTime(post.body || '');
+const postUrl = routes.post(post.slug);
+const HeadingComponent = headingTag;
+---
+
+<article class={`article-card card-${variant} ${className}`}>
+  <div class="card-meta font-mono">
+    <time datetime={post.data.pubDate.toISOString()}>
+      {formatDate(post.data.pubDate)}
+    </time>
+    <span class="meta-dot" aria-hidden="true">&bull;</span>
+    <span class="reading-time">{readingTime}</span>
+    {post.data.draft && (
+      <Badge variant="outline" size="sm">Draft</Badge>
+    )}
+  </div>
+
+  <HeadingComponent class={`card-title ${variant === 'standard' ? 'swiss-heading-3' : 'swiss-heading-4'}`}>
+    <a href={postUrl}>
+      {post.data.title}
+    </a>
+  </HeadingComponent>
+
+  <p class="card-desc text-muted">{post.data.description}</p>
+
+  {post.data.tags.length > 0 && (
+    <div class="card-tags">
+      {variant === 'standard' ? (
+        post.data.tags.map((tag) => (
+          <a href={routes.tag(tag)}>
+            <Badge variant="neutral" size="sm">#{tag}</Badge>
+          </a>
+        ))
+      ) : (
+        post.data.tags.slice(0, 3).map((tag) => (
+          <Badge variant="neutral" size="sm">#{tag}</Badge>
+        ))
+      )}
+    </div>
+  )}
+</article>
+
+<style>
+  .article-card {
+    position: relative;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-border);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition-fast), border-left-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .article-card:hover {
+    transform: translateY(-2px);
+    border-left-color: var(--color-accent);
+    box-shadow: var(--shadow-raised);
+  }
+
+  /* Standard Variant (Blog Archive & Tag pages) */
+  .card-standard {
+    padding: var(--space-6);
+    gap: var(--space-3);
+  }
+
+  .card-standard .card-title {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    line-height: var(--leading-snug);
+    letter-spacing: -0.02em;
+  }
+
+  .card-standard .card-desc {
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+  }
+
+  /* Compact Variant (Bento Grid & Related Posts) */
+  .card-compact {
+    padding: var(--space-5);
+    gap: var(--space-2);
+  }
+
+  .card-compact .card-title {
+    font-size: var(--text-base);
+    font-weight: 700;
+    line-height: var(--leading-snug);
+  }
+
+  .card-compact .card-desc {
+    font-size: var(--text-xs);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Shared Card Elements */
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+  }
+
+  .card-title a {
+    color: var(--color-text);
+    transition: color var(--transition-fast);
+  }
+
+  .card-title a:hover {
+    color: var(--color-accent);
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: var(--space-1);
+  }
+</style>

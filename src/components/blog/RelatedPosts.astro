@@ -1,0 +1,46 @@
+---
+import type { BlogPost } from '../../utils/blog';
+import ArticleCard from './ArticleCard.astro';
+
+interface Props {
+  posts: BlogPost[];
+}
+
+const { posts } = Astro.props;
+---
+
+{posts.length > 0 && (
+  <section class="related-posts-section">
+    <div class="related-header">
+      <p class="swiss-kicker">Related Articles</p>
+      <h3 class="swiss-heading-3">Continue Reading</h3>
+    </div>
+
+    <div class="related-grid">
+      {posts.map((post) => (
+        <ArticleCard post={post} variant="compact" headingTag="h4" />
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .related-posts-section {
+    margin-top: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .related-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,197 @@
+---
+import { projects } from '../../data/projects';
+import BentoCard from './BentoCard.astro';
+import Badge from '../common/Badge.astro';
+import Icon from '../common/Icon.astro';
+
+interface Props {
+  colSpan?: '12' | '8' | '7';
+}
+
+const { colSpan = '12' } = Astro.props;
+---
+
+<BentoCard id="projects" variant="raised" colSpan={colSpan} class="projects-card">
+  <div class="projects-header">
+    <div>
+      <p class="swiss-kicker">Selected Work</p>
+      <h3 class="swiss-heading-3">Featured Engineering Projects</h3>
+    </div>
+    <p class="text-muted projects-subtitle">
+      Systems, tools, and open-source software built for scale and reliability.
+    </p>
+  </div>
+
+  <div class="projects-grid">
+    {projects.map((project) => (
+      <article class="project-item">
+        <div class="project-top">
+          <div class="project-badge-row">
+            <Badge variant={project.status === 'Active' ? 'accent' : 'neutral'} size="sm">
+              {project.status}
+            </Badge>
+            {project.metrics && (
+              <span class="project-metric font-mono">{project.metrics}</span>
+            )}
+          </div>
+
+          <h4 class="project-title">{project.name}</h4>
+          <p class="project-desc text-muted">{project.description}</p>
+        </div>
+
+        <div class="project-bottom">
+          <div class="project-tags">
+            {project.technologies.map((tech) => (
+              <Badge variant="neutral" size="sm">{tech}</Badge>
+            ))}
+          </div>
+
+          <div class="project-links">
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="proj-link"
+                aria-label={`${project.name} GitHub Repository`}
+              >
+                <span>Code</span>
+                <Icon name="github" size={14} />
+              </a>
+            )}
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="proj-link live-link"
+                aria-label={`${project.name} Live Demo`}
+              >
+                <span>Live App</span>
+                <Icon name="external-link" size={14} />
+              </a>
+            )}
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+</BentoCard>
+
+<style>
+  .projects-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .projects-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .projects-subtitle {
+    font-size: var(--text-sm);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-5);
+    }
+  }
+
+  .project-item {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-4);
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+  }
+
+  .project-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-accent);
+  }
+
+  .project-top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .project-badge-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-1);
+  }
+
+  .project-metric {
+    font-size: 0.6875rem;
+    color: var(--color-accent);
+    background-color: var(--color-accent-subtle);
+    padding: 2px 6px;
+    border-radius: var(--radius-xs);
+  }
+
+  .project-title {
+    font-size: var(--text-base);
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: var(--leading-snug);
+  }
+
+  .project-desc {
+    font-size: var(--text-xs);
+    line-height: var(--leading-relaxed);
+  }
+
+  .project-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .project-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .proj-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .proj-link:hover {
+    color: var(--color-accent);
+  }
+
+  .live-link {
+    color: var(--color-accent);
+  }
+</style>
