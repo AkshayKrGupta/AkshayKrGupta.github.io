@@ -1,7 +1,9 @@
 ---
+import { Image } from 'astro:assets';
 import { site } from '../../data/site';
 import BentoCard from './BentoCard.astro';
 import Icon from '../common/Icon.astro';
+import profilePic from '../../assets/profile.jpg';
 
 interface Props {
   colSpan?: '12' | '8' | '7';
@@ -21,17 +23,18 @@ const { colSpan = '8' } = Astro.props;
 
   <!-- Center: Integrated Author Identity Lockup -->
   <div class="hero-identity">
-    {site.profile.image && (
-      <div class="hero-avatar-wrapper">
-        <img
-          src={site.profile.image}
-          alt={site.profile.alt}
-          class="hero-avatar"
-          loading="eager"
-          decoding="async"
-        />
-      </div>
-    )}
+    <div class="hero-avatar-wrapper">
+      <Image
+        src={profilePic}
+        alt={site.profile.alt}
+        width={160}
+        height={160}
+        class="hero-avatar"
+        format="webp"
+        loading="eager"
+        decoding="async"
+      />
+    </div>
     <div class="hero-name-stack">
       <p class="swiss-kicker">Enterprise Architecture &bull; AI &bull; FinTech &bull; Governance</p>
       <h1 class="hero-name">{site.name}</h1>
