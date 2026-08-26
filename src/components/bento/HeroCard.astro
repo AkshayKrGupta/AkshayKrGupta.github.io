@@ -33,7 +33,7 @@ const { colSpan = '8' } = Astro.props;
       </div>
     )}
     <div class="hero-name-stack">
-      <p class="swiss-kicker">Enterprise Architecture &bull; AI &bull; FinTech</p>
+      <p class="swiss-kicker">Enterprise Architecture &bull; AI &bull; FinTech &bull; Governance</p>
       <h1 class="hero-name">{site.name}</h1>
       <h2 class="hero-title">{site.title}</h2>
     </div>
@@ -171,37 +171,47 @@ const { colSpan = '8' } = Astro.props;
   .hero-name-stack {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0;
     flex: 1;
     min-width: 0;
+  }
+
+  .hero-name-stack .swiss-kicker {
+    margin-bottom: var(--space-2);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
   }
 
   .hero-name {
     font-size: clamp(1.75rem, 1.4rem + 1.6vw, 2.75rem);
     font-weight: 800;
-    line-height: 1.1;
+    line-height: 1.15;
     letter-spacing: -0.035em;
     color: var(--color-text);
+    margin-bottom: var(--space-2);
   }
 
   .hero-title {
     font-size: clamp(0.9375rem, 0.85rem + 0.4vw, 1.25rem);
-    font-weight: 600;
-    color: var(--color-accent);
-    letter-spacing: -0.015em;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    letter-spacing: -0.01em;
+    line-height: 1.45;
   }
 
   /* Narrative Tagline */
   .hero-narrative {
-    padding-top: var(--space-1);
+    padding-top: var(--space-4);
+    margin-top: var(--space-1);
+    border-top: 1px solid var(--color-border-subtle);
   }
 
   .hero-tagline {
-    font-size: var(--text-base);
-    font-weight: 500;
+    font-size: clamp(0.9375rem, 0.875rem + 0.25vw, 1.0625rem);
+    font-weight: 400;
     color: var(--color-text-muted);
-    line-height: var(--leading-relaxed);
-    max-width: 620px;
+    line-height: 1.65;
+    max-width: 640px;
   }
 
   /* Actions */
@@ -210,6 +220,6 @@ const { colSpan = '8' } = Astro.props;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-3);
-    padding-top: var(--space-2);
+    padding-top: var(--space-3);
   }
 </style>

@@ -31,7 +31,7 @@ export const projects: ProjectItem[] = [
     name: 'TwinPixCleaner',
     description: 'Privacy-first native macOS utility to scan, detect, and safely deduplicate photos using SHA-256 hash matching and Apple Vision framework visual similarity analysis.',
     status: 'Active',
-    technologies: ['Swift', 'SwiftUI', 'Apple Vision Framework', 'macOS', 'SHA-256'],
+    technologies: ['Swift', 'Apple Vision', 'Local-first', 'macOS'],
     githubUrl: 'https://github.com/AkshayKrGupta/TwinPixCleaner',
     featured: true,
     metrics: 'Native Apple Vision AI & SHA-256'

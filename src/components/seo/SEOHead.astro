@@ -24,7 +24,9 @@ const {
   canonicalUrl,
 } = Astro.props;
 
-const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.title}`;
+const pageTitle = title
+  ? (title.includes(site.name) || title.includes(site.shortName) ? title : `${title} — ${site.name}`)
+  : `${site.name} — ${site.title}`;
 const currentUrl = canonicalUrl || new URL(Astro.url.pathname, Astro.site || site.url).href;
 const imageUrl = image.startsWith('http') ? image : new URL(image, Astro.site || site.url).href;
 ---
@@ -60,6 +62,9 @@ const imageUrl = image.startsWith('http') ? image : new URL(image, Astro.site ||
 <meta property="og:title" content={pageTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={imageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:type" content="image/png" />
 <meta property="og:site_name" content={site.name} />
 
 {article && publishDate && (

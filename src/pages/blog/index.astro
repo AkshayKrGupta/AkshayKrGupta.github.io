@@ -10,8 +10,9 @@ const allTags = await getAllUniqueTags();
 ---
 
 <BaseLayout
-  title={`Technical Articles — ${site.name}`}
+  title={site.blog.name}
   description={site.blog.description}
+  image="/og-articles-image.png"
 >
   <div class="page-container blog-index-container">
     <header class="blog-index-header">

@@ -27,8 +27,9 @@ const { posts } = Astro.props;
 ---
 
 <BaseLayout
-  title={`#${tag} — Technical Articles — ${site.name}`}
+  title={`#${tag} — Technical Articles`}
   description={`Technical articles tagged with #${tag}`}
+  image="/og-articles-image.png"
 >
   <div class="page-container tag-archive-container">
     <header class="tag-archive-header">

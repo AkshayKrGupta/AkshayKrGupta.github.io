@@ -49,7 +49,7 @@ const readingTime = getReadingTime(rawContent);
 <BaseLayout
   title={title}
   description={description}
-  image={heroImage}
+  image={heroImage || '/og-articles-image.png'}
   article={true}
   publishDate={pubDate}
   modifiedDate={updatedDate}

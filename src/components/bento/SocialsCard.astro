@@ -1,7 +1,7 @@
 ---
 import { site } from '../../data/site';
 import BentoCard from './BentoCard.astro';
-
+import Badge from '../common/Badge.astro';
 interface Props {
   colSpan?: '12' | '6' | '5' | '4';
 }
@@ -12,11 +12,20 @@ const { colSpan = '4' } = Astro.props;
 <BentoCard id="contact" variant="flat" colSpan={colSpan} class="socials-card">
   <div class="socials-header">
     <p class="swiss-kicker">Connect</p>
-    <h3 class="swiss-heading-3">Get in Touch</h3>
+    <h3 class="swiss-heading-3">Let's talk architecture</h3>
     <p class="text-muted socials-sub">
-      Connect with me on LinkedIn or explore my code on GitHub.
+      Interested in conversations around:
     </p>
+    <div class="focus-pills">
+      <Badge variant="neutral" size="sm">Enterprise Architecture</Badge>
+      <Badge variant="neutral" size="sm">AI Systems</Badge>
+      <Badge variant="neutral" size="sm">Distributed Systems</Badge>
+      <Badge variant="neutral" size="sm">Architecture Governance</Badge>
+      <Badge variant="neutral" size="sm">AI Governance</Badge>
+      <Badge variant="neutral" size="sm">Open Source</Badge>
+    </div>
   </div>
+
 
   <div class="social-links-grid">
     <a
@@ -85,6 +94,9 @@ const { colSpan = '4' } = Astro.props;
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
   }
 
   .social-btn {

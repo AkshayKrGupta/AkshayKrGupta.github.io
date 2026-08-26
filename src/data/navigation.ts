@@ -13,12 +13,12 @@ export const mainNavItems: NavItem[] = [
   { label: 'About', href: '/#about' },
   { label: 'Experience', href: '/#experience' },
   { label: 'Projects', href: '/#projects' },
-  { label: 'Blog', href: '/blog/' },
+  { label: 'Writing', href: '/blog/' },
   { label: 'Now', href: '/now/' },
 ];
 
 export const footerNavItems: NavItem[] = [
   { label: 'Portfolio', href: '/' },
-  { label: 'Technical Articles', href: '/blog/' },
+  { label: 'Writing', href: '/blog/' },
   { label: 'Now', href: '/now/' },
 ];
