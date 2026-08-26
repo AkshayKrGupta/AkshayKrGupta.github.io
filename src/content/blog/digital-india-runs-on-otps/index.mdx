@@ -1,0 +1,288 @@
+---
+title: "Digital India Runs on OTPs"
+description: "India's digital economy runs on billions of SMS messages every day. Explore the architecture, reliability challenges, and future of OTP authentication"
+pubDate: 2026-07-22
+author: "Akshay K Gupta"
+heroImage: "./digital-india.png"
+tags:
+  - india
+  - otp
+  - sms
+  - authentication
+  - cyber-security
+  - enterprise-architecture
+draft: false
+featured: true
+---
+
+Before you even step out of bed, the protocol has already started.
+
+First thing in the morning, the quick-commerce delivery executive rings your doorbell with your groceries. You open the door, and almost instinctively, he asks, “Sir, 4-digit delivery PIN?” Next, you get into a cab and, before your ride starts, the driver looks back and says, “Sir, OTP.” By afternoon, you may have already approved a credit card transaction, completed an Aadhaar e-Sign for any government-related service, or logged into a SaaS application, using another six-digit code. By evening, there may be a few more waiting for you: an e-commerce delivery, a food order, a banking transaction, perhaps another login.
+
+None of this feels unusual anymore. And that is precisely what makes it interesting.
+
+For the average urban digital consumer in India, the OTP is no longer an occasional security checkpoint. It has become part of the invisible operating rhythm of everyday digital life. We don't think about the systems that generate it, route it, filter it, deliver it, expire it and validate it. We simply expect the six digits to appear on our phone within a few seconds.
+
+And when they don't, we immediately notice.
+
+## The scale behind six digits
+
+To understand why this matters, it helps to step back from the individual OTP and look at the infrastructure underneath it.
+
+India's digital economy has created an enormous Application-to-Person, or A2P, messaging ecosystem. Banks, fintech companies, e-commerce platforms, airlines, government services, logistics companies, SaaS providers and thousands of other businesses use SMS to communicate transactional and authentication events to customers.
+
+Industry estimates have put India's commercial SMS traffic at well over a billion messages a day, with some estimates placing it around 1.8 billion or more. At that scale, we're no longer talking about “sending an SMS.” We're talking about operating a national-scale distributed messaging system.
+
+Put that number into perspective: **1.8 billion messages a day is roughly 75 million messages an hour, or more than 1.2 million messages every minute.**
+
+That is more than 20,000 messages every second, averaged across the day.
+
+And OTPs are only one part of that traffic.
+
+The system is simultaneously handling transaction alerts, delivery notifications, account updates, promotional messages, government communications and other service messages. India's telecom ecosystem also has a substantial regulatory and compliance layer around this traffic: businesses sending bulk communications have to register as principal entities, register headers and templates, and comply with the country's DLT-based framework.
+
+The important point isn't whether the exact number on a particular day is 1.3 billion, 1.8 billion or higher.
+
+The important point is the order of magnitude.
+
+**Millions of messages are moving through the ecosystem every minute.**
+
+And this is where the architecture starts to creak.
+
+## The paradox underneath the OTP
+
+We have built a 21st-century digital economy on a **1990s-era telecommunications protocol**.
+
+The technical foundations of SMS were designed during the late 1980s and early 1990s. It was an elegant solution for its time: lightweight, ubiquitous and capable of working across mobile networks without requiring an internet connection or a sophisticated application.
+
+Those characteristics are exactly why SMS has survived.
+
+But the world around it has changed dramatically.
+
+We now expect authentication to be near-instantaneous. We expect APIs to respond in milliseconds. We design cloud systems around P99 latency. We build globally distributed databases, event-driven architectures and real-time payment systems.
+
+And yet, for a huge number of digital interactions, the final authorisation step still looks like this:
+
+**Generate six digits → send a text message → wait for a telecom network → read the message → type the digits → verify.**
+
+That mismatch between modern application expectations and an old delivery primitive is where some interesting engineering problems begin to appear.
+
+## When the OTP arrives late
+
+Consider a completely ordinary login. You enter your username and password. The application generates an OTP and starts a 60-second countdown. Ten seconds pass. Nothing. Twenty seconds. Still nothing. Thirty seconds. You press **Resend OTP**. A new code is generated. Then, perhaps ten seconds later, your phone finally buzzes.
+
+You enter the code.
+
+**Invalid OTP.**
+
+What happened?
+
+It may not have been an authentication failure at all. It may have been a distributed-systems problem.
+
+The first OTP was generated successfully, but the SMS was delayed somewhere in the delivery chain. You requested a second OTP, which generated a newer code. The messages then arrived in an order that the user did not expect.
+
+Now you have a race condition spanning multiple systems that you don't control. The application has state. The OTP service has state. The messaging provider has state. The telecom network has state. The handset has state. And all of those systems are communicating asynchronously.
+
+The user, however, experiences the entire thing as a single synchronous interaction: **“I requested an OTP. Why hasn't it arrived?”**
+
+This is one of the fundamental problems with SMS-based authentication. The underlying system is asynchronous, but the user experience is expected to feel synchronous.
+
+And when those two models diverge, the application doesn't get to explain the architecture to the user. The user simply concludes that the application is broken.
+
+## The last mile is physical
+
+There is another problem that becomes obvious the moment you leave the comfort of a strong cellular network.
+
+Imagine you're trying to make a payment in a basement parking lot. Your phone is connected to Wi-Fi, the application loads perfectly and the payment request reaches the backend without a problem.
+
+Then the application asks for an OTP.
+
+No cellular signal.
+
+Or you're inside an elevator. Or in a crowded railway station. Or in a large building where mobile reception is poor. Or travelling through an area where the carrier network is congested.
+
+The application may be healthy. Your internet connection may be healthy. The payment infrastructure may be healthy.
+
+But the authentication channel has disappeared.
+
+That's an unusual architectural dependency.
+
+We can have an application running on highly available cloud infrastructure, with redundant databases, multiple availability zones and sophisticated observability—and still fail the user's transaction because a message didn't make it to a handset.
+
+This is an important distinction for anyone designing distributed systems:
+
+**Application availability is not the same as authentication availability.**
+
+## The hidden system behind a six-digit code
+
+The simplicity of an OTP hides a surprisingly long chain of dependencies.
+
+A typical message can travel from an application through an authentication service and messaging provider, into telecom routing and filtering infrastructure, through the operator's messaging systems and signalling network, and finally across the radio network to the handset.
+
+India adds another interesting layer through its DLT-based commercial communications framework, which introduces sender registration, headers, templates and message traceability into the ecosystem.
+
+None of these components are inherently bad. In fact, many of them exist precisely because the ecosystem has to operate safely and at enormous scale.
+
+The problem is that every additional component introduces another place where latency, retries, filtering, routing or state synchronisation can affect the final user experience.
+
+This is why average latency can be a misleading metric for authentication.
+
+Suppose an OTP normally arrives in three seconds. That's great. But if a small percentage of messages take 30, 45 or 60 seconds, those tail events can become disproportionately important when the application itself has a one-minute authentication window.
+
+The user doesn't experience your average.
+
+**They experience their request.**
+
+And at India's scale, even a tiny percentage of problematic requests can represent a very large number of people.
+
+## So, should we get rid of SMS OTPs?
+
+Probably not. And this is where the conversation becomes more nuanced.
+
+SMS has one enormous advantage that engineers sometimes underestimate: **the massive reach.**
+
+It works across a huge range of devices. It doesn't require the user to install an authenticator application. It doesn't require a modern smartphone. It doesn't require the user to understand public-key cryptography. And it doesn't depend on an internet connection in the same way that many app-based authentication mechanisms do.
+
+In a country as large and diverse as India, those characteristics matter.
+
+So the question isn't really:
+
+**“Why are we still using SMS?”**
+
+The better question is:
+
+**“Why are we using SMS for everything?”**
+
+SMS is a remarkably useful fallback and communication channel.
+
+It is a much less compelling default identity layer for every login, every transaction and every step-up authentication event.
+
+And that distinction changes the architecture.
+
+## What comes next?
+
+The next generation of authentication is already moving in several directions.
+
+### Passkeys: authentication without the message
+
+Passkeys, built on technologies such as FIDO2 and WebAuthn, replace the shared-secret model with public-key cryptography. Instead of sending a code to your phone and asking you to type it back, the device proves possession of a private key.
+
+The user may simply authenticate with Face ID, a fingerprint or the device's local security mechanism.
+
+There is no SMS to deliver. No message queue to wait on. No six-digit code to copy.
+
+And because the authentication is cryptographic rather than based on a shared code, the model is substantially more resistant to phishing and adversary-in-the-middle attacks.
+
+From an architecture perspective, this is an important shift: authentication no longer depends on a separate messaging system delivering a secret to a human.
+
+### Network-based authentication
+
+Telecom networks are also becoming programmable.
+
+Initiatives such as **GSMA Open Gateway and CAMARA** are exposing standardised APIs that allow applications to interact with network capabilities in ways that were previously difficult or impossible.
+
+One direction this enables is silent verification based on network-level signals.
+
+Instead of asking a user to prove possession of a phone number by typing a code from an SMS, the application can potentially use trusted signals from the operator network to establish that the device, subscriber and session are consistent with what the application expects.
+
+The user doesn't have to do anything.
+
+And that is an important pattern in modern authentication: **Move verification from the human interaction layer into the infrastructure layer.**
+
+### Device binding: the UPI pattern
+
+Another model that India has already demonstrated at enormous scale is device-bound authentication.
+
+The basic idea is simple: establish a cryptographic relationship between a trusted device and an identity, and use that relationship for subsequent authorisation.
+
+Instead of repeatedly asking, **“Can you read the code sent to this phone?”**, the system asks, **“Can this trusted device produce the cryptographic proof required for this transaction?”**
+
+That's a fundamentally different trust model.
+
+And importantly, the authentication event doesn't require generating and delivering a new SMS every time.
+
+### Risk-based authentication
+
+Perhaps the biggest change, however, is conceptual.
+
+Why should every user perform the same authentication ceremony?
+
+Imagine logging into your bank from your usual phone, using your usual device, from a familiar location, with normal behavioural patterns.
+
+Now imagine a completely different situation: a new device, an unusual location, a high-value transaction and behaviour that doesn't match the user's normal profile.
+
+Those two situations should not necessarily receive the same amount of friction.
+
+Risk-based authentication takes this approach by evaluating context and asking for stronger proof when the situation warrants it.
+
+Low risk can remain almost invisible.
+
+High risk can trigger biometrics, passkeys or additional verification.
+
+For the user, that means less friction. For the business, it can mean better conversion. For the security team, it means concentrating controls where they actually provide value.
+
+## The bigger architectural shift
+
+This isn't really a story about SMS. It is a story about **where we place trust**.
+
+The traditional model is roughly:
+
+**Application → SMS → Phone → Human → Application**
+
+The emerging model looks more like:
+
+**Application → Device / Network / Cryptographic Identity → Risk Decision**
+
+That is a fundamental shift.
+
+For decades, authentication has largely been designed around secrets that humans can possess and reproduce: passwords, PINs, codes and security questions.
+
+Modern systems are increasingly moving toward something different.
+
+Let the device prove possession. Let cryptography prove authenticity. Let the network provide context. Let risk engines determine how much additional verification is necessary.
+
+And let the human get involved only when the system actually needs them.
+
+This is the same broader evolution we've seen across infrastructure: from static credentials to short-lived credentials, from manually managed servers to automated infrastructure, and from synchronous assumptions to distributed systems designed around failure.
+
+Authentication is going through its own version of that transition.
+
+## The architectural question for India
+
+There is still a difficult trade-off: **Universal reach versus deterministic security.**
+
+SMS won because it was universal. You didn't need a new application, a compatible biometric sensor or any understanding of public-key cryptography. You just needed a phone number.
+
+That advantage should not be dismissed.
+
+But as India's digital economy becomes more real-time, more automated and more dependent on digital identity, the cost of making SMS the default authentication layer becomes increasingly visible.
+
+Latency matters. Reliability matters. Fraud matters. Operational cost matters. And increasingly, user experience matters too.
+
+The next generation of authentication probably won't be about finding a faster way to deliver six digits.
+
+It will be about deciding when those six digits are necessary in the first place.
+
+## The last OTP
+
+Perhaps the most interesting future is one where the OTP simply becomes less visible.
+
+You complete a payment without entering one. You sign a contract without waiting for one. You log into an application without typing one. You enter a building without reading one aloud.
+
+And you probably won't notice when the transition happens.
+
+That's the point.
+
+The best authentication experience is increasingly becoming the one that proves who you are **without asking you to prove it over and over again.**
+
+India has done something remarkable by making digital transactions and digital identity accessible to hundreds of millions of people.
+
+The next challenge is not simply to make that infrastructure faster.
+
+It is to make it **less dependent on a human reading six digits from a text message.**
+
+The OTP got us here.
+
+It may not be what takes us to the next stage.
+
+* * *

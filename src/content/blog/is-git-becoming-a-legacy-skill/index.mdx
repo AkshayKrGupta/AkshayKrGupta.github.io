@@ -1,0 +1,156 @@
+---
+title: "Is Git Becoming a Legacy Skill in the Age of AI?"
+description: "A recent incident made me rethink one of software engineering’s most fundamental skills."
+pubDate: 2026-06-14
+heroImage: "./git_skill.png"
+author: "Akshay K Gupta"
+tags:
+  - git
+  - artificial-intelligence
+  - software-engineering
+  - productivity
+draft: false
+featured: true
+---
+
+For years, mastering Git was considered part of the software engineering toolkit. Every developer eventually had to learn the difference between rebasing and merging, navigate painful merge conflicts, and recover from the occasional mistake that inevitably found its way into the commit history.
+
+Knowing Git wasn’t optional. It was expected.
+
+You didn’t have to memorise every command, but when things went wrong, someone on the team needed to know how to untangle the mess.
+
+Lately, however, I have started to wonder whether that expectation is changing.
+
+Not because version control is becoming less important.
+
+But because AI is increasingly handling the operational complexity on our behalf.
+
+### **The Git Badge of Honor**
+
+For more than a decade, proficiency with Git represented a certain level of engineering maturity. There was almost a cultural aspect to it.
+
+Developers swapped stories about impossible merge conflicts, disastrous force pushes, and heroic recoveries involving obscure Git commands that few people understood but everyone respected.
+
+Knowing how to manipulate commit history wasn’t just useful, it was often viewed as a mark of competence. And to be fair, Git isn’t exactly known for its friendly user experience.
+
+The difference between `merge`, `rebase`, `reset`, `revert`, and `cherry-pick` can feel obvious only after years of experience.
+
+Until then, every command comes with a healthy dose of anxiety.
+
+### **The Mistake Every Developer Dreads**
+
+A few weeks ago, I made one of those mistakes.
+
+I was moving quickly and accidentally staged and pushed a configuration file containing sensitive credentials and keys to a remote repository.
+
+The moment I realised what had happened, I had the same reaction many developers have had before me: *Oh no.*
+
+Historically, this kind of incident triggered a very specific sequence of events:
+
+*   Stop everything.
+    
+*   Search documentation and Stack Overflow.
+    
+*   Figure out the correct history-rewriting approach.
+    
+*   Hope you remember the exact git command syntax
+    
+*   Rewrite history carefully.
+    
+*   Force push the cleaned repository.
+    
+*   Coordinate with teammates to avoid pulling the compromised history.
+    
+*   Double-check that nothing else was accidentally broken.
+    
+
+It wasn’t impossible. But it was stressful.
+
+And it often required knowledge that most engineers don’t use frequently enough to retain confidently.
+
+### **This Time Was Different**
+
+This time, instead of opening half a dozen browser tabs and piecing together commands from old blog posts, I turned to GitHub Copilot.
+
+I described the situation.
+
+Copilot understood the context of the problem, suggested the appropriate recovery strategy, performed the necessary Git operations, verified that the sensitive file had been removed from the repository history, and walked me through the final validation steps before pushing the cleaned repository state.
+
+What had traditionally been an hour-long interruption became a process measured in minutes.
+
+The difference wasn’t just speed. It was cognitive load.
+
+I didn’t have to recall rarely used commands or translate documentation into action.
+
+I stayed focused on the outcome while the AI handled much of the operational detail.
+
+### **Are We Witnessing a Shift?**
+
+This experience left me thinking about a broader trend.
+
+Throughout the history of software engineering, we’ve continuously moved up the abstraction ladder.
+
+There was a time when writing assembly language was a common requirement. Then higher-level programming languages emerged.
+
+Infrastructure management evolved into Infrastructure as Code.
+
+Container orchestration simplified deployment concerns that once demanded extensive operational expertise.
+
+Each transition followed a familiar pattern: The underlying concepts remained important, but the mechanics became increasingly automated.
+
+Perhaps Git is entering that phase as well.
+
+### **What Still Matters**
+
+To be clear, I don’t believe version control knowledge is becoming irrelevant.
+
+Understanding concepts such as:
+
+*   Branching strategies
+    
+*   Isolation of work
+    
+*   Code review workflows
+    
+*   Collaboration models
+    
+*   Release management
+    
+*   Deployment pipelines
+    
+
+remains incredibly valuable.
+
+These concepts shape how teams build software effectively.
+
+What may be changing is the expectation that every engineer must memorise the exact syntax required to recover from every possible Git disaster.
+
+### **From Memorisation to Intent**
+
+Maybe the real shift isn’t about Git at all. Maybe it’s about how expertise itself is evolving.
+
+Historically, expertise often meant retaining detailed procedural knowledge.
+
+Today, expertise increasingly involves understanding intent, evaluating trade-offs, and validating outcomes while delegating implementation details to intelligent tools.
+
+In other words:
+
+Knowing *what* should happen may become more important than remembering *exactly how* to make it happen.
+
+### **The Future of Git Skills**
+
+Will developers still need to understand Git?
+
+Absolutely.
+
+Will they need to memorise obscure commands that they use once every few years? Perhaps not.
+
+In the same way, calculators didn’t eliminate mathematics and cloud platforms didn’t eliminate architecture, AI assistants may not eliminate Git expertise.
+
+But they might redefine it.
+
+The future software engineer may spend less time wrestling with command syntax and more time focusing on design, systems thinking, and business outcomes.
+
+And maybe that’s progress…!!!
+
+* * *
