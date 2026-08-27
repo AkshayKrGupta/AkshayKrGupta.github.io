@@ -30,30 +30,29 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
 ---
 
 <header class="post-header">
-  <div class="post-kicker-row">
-
-  <a href="/" class="back-link font-mono">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <nav class="post-kicker-row font-mono" aria-label="Breadcrumb">
+    <a href="/" class="back-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="m15 18-6-6 6-6"></path>
       </svg>
       <span>Home</span>
     </a>
-
-    <a href="/blog/" class="back-link font-mono">
-      <span>/ Writing</span>
-    </a>
-    {tags.length > 0 && (
-      <span class="first-tag font-mono">/ #{tags[0]}</span>
-    )}
-  </div>
+    <span class="crumb-separator">/</span>
+    <a href="/blog/" class="crumb-link">Writing</a>
+    <span class="crumb-separator">/</span>
+    <span class="crumb-current" aria-current="page" title={title}>{title}</span>
+  </nav>
 
   <h1 class="post-title swiss-heading-1">{title}</h1>
   <p class="post-description text-muted">{description}</p>
 
   <div class="post-metadata-bar font-mono">
     <div class="meta-item">
-      <span class="meta-label">Published:</span>
-      <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+    <span class="meta-label">Architecture Notes.</span>
+    </div>
+
+    <div class="meta-item">
+      <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}.</time>
     </div>
     {updatedDate && (
       <div class="meta-item">
@@ -61,14 +60,16 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
         <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
       </div>
     )}
+    
     <div class="meta-item">
-      <span class="meta-label">Read:</span>
+     <!-- <span class="meta-label">Read:</span> -->
       <span>{readingTime}</span>
     </div>
-    <div class="meta-item">
+    
+   <!-- <div class="meta-item">
       <span class="meta-label">Author:</span>
-      <span>{author}</span>
-    </div>
+      <span>{author}</span> 
+    </div> -->
   </div>
 
   <div class="post-tags-row">
@@ -144,6 +145,7 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
     align-items: center;
     gap: var(--space-2);
     font-size: var(--text-xs);
+    flex-wrap: wrap;
   }
 
   .back-link {
@@ -154,13 +156,33 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
     font-weight: 600;
   }
 
+  .crumb-link {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  .crumb-link:hover,
   .back-link:hover {
     text-decoration: underline;
   }
 
-  .first-tag {
+  .crumb-separator {
     color: var(--color-text-subtle);
-    text-transform: uppercase;
+    user-select: none;
+  }
+
+  .crumb-current {
+    color: var(--color-text-muted);
+    max-width: 460px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 640px) {
+    .crumb-current {
+      max-width: 180px;
+    }
   }
 
   .post-title {
