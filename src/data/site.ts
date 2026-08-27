@@ -55,7 +55,7 @@ export const site: SiteConfig = {
   },
 
   blog: {
-    name: 'Writing',
+    name: 'Architecture Notes',
     description: 'Thinking and writing about systems, architecture, AI, and the decisions behind building software for regulated environments.',
   },
 };
