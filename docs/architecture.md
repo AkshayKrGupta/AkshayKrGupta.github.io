@@ -3,7 +3,7 @@
 > **Repository**: `AkshayPortfolio`  
 > **Author**: Akshay K Gupta  
 > **Role**: Solutions Architect  
-> **Live URL**: [https://akshaykrgupta.github.io/](https://akshaykrgupta.github.io/)  
+> **Live URL**: [https://akshaykgupta.me](https://akshaykgupta.me/)  
 > **Primary Technology Stack**: Astro 5 (Static Engine), TypeScript, MDX, Vanilla CSS Design Tokens, GitHub Pages CI/CD
 
 ---

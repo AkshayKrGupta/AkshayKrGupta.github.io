@@ -6,7 +6,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   output: 'static',
   compressHTML: true,
-  site: process.env.SITE_URL || 'https://akshaykrgupta.github.io',
+  site: process.env.SITE_URL || 'https://akshaykgupta.me',
   base: process.env.BASE_PATH || '/',
   integrations: [
     mdx({

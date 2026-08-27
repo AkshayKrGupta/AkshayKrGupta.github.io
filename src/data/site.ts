@@ -35,9 +35,9 @@ export const site: SiteConfig = {
   title: 'Curious about systems. Serious about architecture.',
   tagline: 'Designing enterprise systems for regulated environments - where architecture, AI, and governance intersect.',
   description: 'Personal portfolio and technical articles by Akshay K Gupta — Senior Solutions Architect building enterprise-scale systems, AI in regulated industries, and system architecture.',
-  shortBio: 'Senior Solutions Architect building enterprise-scale systems with Global FinTech. Writing about enterprise architecture, AI adoption in regulated industries, and developer tooling.',
+  shortBio: 'Designing enterprise systems for regulated environments — where architecture, AI, and governance intersect. Open to interesting architecture conversations & collaborations.',
 
-  url: 'https://akshaykrgupta.github.io',
+  url: 'https://akshaykgupta.me',
   location: 'Bengaluru, India 🇮🇳 ',
 
   status: {
