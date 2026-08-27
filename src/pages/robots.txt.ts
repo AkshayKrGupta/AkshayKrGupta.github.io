@@ -23,7 +23,7 @@ User-agent: Applebot-Extended
 Allow: /
 
 # Discovery
-Sitemap: ${siteUrl}/sitemap-index.xml
+Sitemap: ${siteUrl}/sitemap.xml
 # LLM Context: ${siteUrl}/llms.txt
 # LLM Full Corpus: ${siteUrl}/llms-full.txt
 `;

@@ -22,6 +22,7 @@ ${site.name} (${site.shortName}) is a ${site.title} specializing in enterprise-s
 - GitHub: ${site.social.github}
 - LinkedIn: ${site.social.linkedin}
 - RSS Feed: ${siteUrl}${routes.rss}
+- Full Text Corpus: ${siteUrl}${routes.llmsFull}
 
 ## Published Technical Articles
 ${articlesList}
@@ -38,6 +39,9 @@ ${articlesList}
 - Distributed Systems & Consensus Algorithms (Raft, Paxos)
 - High-Throughput Microservices & Event-Driven Architecture
 - Cloud Infrastructure & Kubernetes Automation
+
+## Full Corpus
+- [Full Technical Corpus](${siteUrl}${routes.llmsFull}): Comprehensive markdown file containing the complete text of all published articles in a single corpus for deep-context LLM analysis.
 `;
 
   return new Response(content, {

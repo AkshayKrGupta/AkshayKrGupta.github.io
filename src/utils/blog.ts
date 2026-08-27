@@ -22,9 +22,10 @@ export const routes = {
 /**
  * Fetch all published blog posts sorted by publication date descending
  */
-export async function getPublishedPosts(): Promise<BlogPost[]> {
+export async function getPublishedPosts(includeDrafts = false): Promise<BlogPost[]> {
   const posts = await getCollection('blog', ({ data }) => {
-    return import.meta.env.PROD ? !data.draft : true;
+    if (includeDrafts) return true;
+    return !data.draft;
   });
 
   return posts.sort(

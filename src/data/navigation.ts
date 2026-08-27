@@ -21,4 +21,6 @@ export const footerNavItems: NavItem[] = [
   { label: 'Portfolio', href: '/' },
   { label: 'Writing', href: '/blog/' },
   { label: 'Now', href: '/now/' },
+  { label: 'Sitemap', href: '/sitemap.xml', external: true },
+  { label: 'For AI Agents', href: '/llms.txt', external: true },
 ];

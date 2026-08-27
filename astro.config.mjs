@@ -1,6 +1,5 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,9 +15,6 @@ export default defineConfig({
         wrap: false,
       },
       gfm: true,
-    }),
-    sitemap({
-      filter: (page) => !page.includes('/404') && !page.includes('/drafts/'),
     }),
   ],
   markdown: {
