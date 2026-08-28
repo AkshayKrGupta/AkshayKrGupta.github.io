@@ -17,14 +17,14 @@ export async function GET(context: any) {
 ${site.name} (${site.shortName}) is a ${site.title} specializing in enterprise-scale systems, distributed computing, Model Context Protocol (MCP), and AI adoption in regulated industries.
 
 - Homepage: ${siteUrl}${routes.home}
-- Technical Articles: ${siteUrl}${routes.blog}
+- Architecture Notes: ${siteUrl}${routes.blog}
 - Current Focus (/now): ${siteUrl}${routes.now}
 - GitHub: ${site.social.github}
 - LinkedIn: ${site.social.linkedin}
 - RSS Feed: ${siteUrl}${routes.rss}
 - Full Text Corpus: ${siteUrl}${routes.llmsFull}
 
-## Published Technical Articles
+## Published Architecture Notes
 ${articlesList}
 
 ## Active Projects & Software
@@ -41,7 +41,7 @@ ${articlesList}
 - Cloud Infrastructure & Kubernetes Automation
 
 ## Full Corpus
-- [Full Technical Corpus](${siteUrl}${routes.llmsFull}): Comprehensive markdown file containing the complete text of all published articles in a single corpus for deep-context LLM analysis.
+- [Full Technical Corpus](${siteUrl}${routes.llmsFull}): Comprehensive markdown file containing the complete text of all published architecture notes in a single corpus for deep-context LLM analysis.
 `;
 
   return new Response(content, {

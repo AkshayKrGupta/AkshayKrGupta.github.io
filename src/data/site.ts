@@ -34,7 +34,7 @@ export const site: SiteConfig = {
   shortName: 'Akshay K Gupta',
   title: 'Curious about systems. Serious about architecture.',
   tagline: 'Designing enterprise systems for regulated environments - where architecture, AI, and governance intersect.',
-  description: 'Personal portfolio and technical articles by Akshay K Gupta — Senior Solutions Architect building enterprise-scale systems, AI in regulated industries, and system architecture.',
+  description: 'Personal portfolio and architecture notes by Akshay K Gupta — building enterprise-scale systems, AI in regulated industries, and system architecture.',
   shortBio: 'Designing enterprise systems for regulated environments — where architecture, AI, and governance intersect. Open to interesting architecture conversations & collaborations.',
 
   url: 'https://akshaykgupta.me',

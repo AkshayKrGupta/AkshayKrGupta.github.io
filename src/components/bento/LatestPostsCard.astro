@@ -22,14 +22,14 @@ const latestPosts = allPosts.slice(0, maxPosts);
       <h3 class="swiss-heading-3">Architecture Notes</h3>
     </div>
     <a href={routes.blog} class="view-all-link font-mono">
-      <span>View All Articles</span>
+      <span>View All Notes</span>
       <Icon name="arrow-right" size={14} />
     </a>
   </div>
 
   <div class="posts-list">
     {latestPosts.length === 0 ? (
-      <p class="text-muted">No technical articles published yet.</p>
+      <p class="text-muted">No Architecture Notes published yet.</p>
     ) : (
       latestPosts.map((post) => (
         <ArticleCard post={post} variant="compact" headingTag="h4" />
