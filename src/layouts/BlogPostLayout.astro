@@ -5,6 +5,7 @@ import PostHeader from '../components/blog/PostHeader.astro';
 import PostFooter from '../components/blog/PostFooter.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
 import RelatedPosts from '../components/blog/RelatedPosts.astro';
+import ArchitectureBackground from '../components/blog/ArchitectureBackground.astro';
 import { getReadingTime } from '../utils/readingTime';
 import type { BlogPost } from '../utils/blog';
 
@@ -57,6 +58,9 @@ const socialImage = typeof heroImage === 'object' && heroImage !== null ? (heroI
   modifiedDate={updatedDate}
   tags={tags}
 >
+  <!-- Architectural Visual Signature Background (Zero JS, GPU Layer) -->
+  <ArchitectureBackground />
+
   <!-- Reading Progress Bar (Hardware Accelerated, <0.2 kB JS) -->
   <div id="reading-progress" class="reading-progress-bar" aria-hidden="true"></div>
 
@@ -109,6 +113,8 @@ const socialImage = typeof heroImage === 'object' && heroImage !== null ? (heroI
   }
 
   .blog-layout-container {
+    position: relative;
+    z-index: 1;
     padding-top: var(--space-7);
     padding-bottom: var(--space-9);
   }
