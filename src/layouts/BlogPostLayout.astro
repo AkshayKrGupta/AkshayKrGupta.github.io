@@ -79,7 +79,7 @@ const socialImage = typeof heroImage === 'object' && heroImage !== null ? (heroI
           <slot />
         </div>
 
-        <PostFooter prevPost={prevPost} nextPost={nextPost} />
+        <PostFooter prevPost={prevPost} nextPost={nextPost} tags={tags} />
 
         {relatedPosts.length > 0 && (
           <RelatedPosts posts={relatedPosts} />

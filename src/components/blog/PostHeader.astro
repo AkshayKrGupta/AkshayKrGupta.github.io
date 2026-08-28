@@ -2,7 +2,6 @@
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import { formatDate } from '../../utils/formatters';
-import Badge from '../common/Badge.astro';
 
 interface Props {
   title: string;
@@ -20,8 +19,6 @@ const {
   description,
   pubDate,
   updatedDate,
-  author,
-  tags,
   readingTime,
   heroImage,
 } = Astro.props;
@@ -30,64 +27,43 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
 ---
 
 <header class="post-header">
-  <nav class="post-kicker-row font-mono" aria-label="Breadcrumb">
-    <a href="/" class="back-link">
-      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m15 18-6-6 6-6"></path>
-      </svg>
-      <span>Home</span>
+  <nav class="post-kicker-row" aria-label="Publication Navigation">
+    <a href="/blog/" class="swiss-kicker post-publication-kicker">
+      <span class="kicker-arrow" aria-hidden="true">&larr;</span>
+      <span>Architecture Notes</span>
     </a>
-    <span class="crumb-separator">/</span>
-    <a href="/blog/" class="crumb-link">Writing</a>
-    <span class="crumb-separator">/</span>
-    <span class="crumb-current" aria-current="page" title={title}>{title}</span>
   </nav>
 
   <h1 class="post-title swiss-heading-1">{title}</h1>
   <p class="post-description text-muted">{description}</p>
 
-  <div class="post-metadata-bar font-mono">
-    <div class="meta-item">
-    <span class="meta-label">Architecture Notes.</span>
-    </div>
-
-    <div class="meta-item">
-      <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}.</time>
-    </div>
-    {updatedDate && (
+  <div class="post-meta-row">
+    <div class="post-metadata-bar font-mono">
       <div class="meta-item">
-        <span class="meta-label">Updated:</span>
-        <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
       </div>
-    )}
-    
-    <div class="meta-item">
-     <!-- <span class="meta-label">Read:</span> -->
-      <span>{readingTime}</span>
-    </div>
-    
-   <!-- <div class="meta-item">
-      <span class="meta-label">Author:</span>
-      <span>{author}</span> 
-    </div> -->
-  </div>
-
-  <div class="post-tags-row">
-    <div class="post-tags-container">
-      {tags.map((tag) => (
-        <a href={`/blog/tags/${tag}/`}>
-          <Badge variant="neutral" size="sm">#{tag}</Badge>
-        </a>
-      ))}
+      <span class="meta-dot" aria-hidden="true">&bull;</span>
+      <div class="meta-item">
+        <span class="reading-time">{readingTime}</span>
+      </div>
+      {updatedDate && (
+        <>
+          <span class="meta-dot" aria-hidden="true">&bull;</span>
+          <div class="meta-item">
+            <span class="meta-label">Updated:</span>
+            <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
+          </div>
+        </>
+      )}
     </div>
 
     <div class="post-actions font-mono">
-      <button id="copy-article-btn" class="neu-pill action-pill" aria-label="Copy article link" title="Copy link to article">
-        <svg id="copy-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button class="neu-pill action-pill copy-article-btn" type="button" aria-label="Copy article link" title="Copy link to article">
+        <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
           <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
         </svg>
-        <span id="copy-text">Copy Link</span>
+        <span class="copy-text">Copy Link</span>
       </button>
       <a
         href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`}
@@ -134,7 +110,7 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
   .post-header {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-3);
     margin-bottom: var(--space-7);
     padding-bottom: var(--space-6);
     border-bottom: 1px solid var(--color-border);
@@ -143,45 +119,30 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
   .post-kicker-row {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    font-size: var(--text-xs);
-    flex-wrap: wrap;
+    margin-bottom: var(--space-1);
   }
 
-  .back-link {
+  .post-publication-kicker {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    color: var(--color-accent);
-    font-weight: 600;
+    gap: 6px;
+    margin-bottom: 0;
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    padding: 4px 0;
   }
 
-  .crumb-link {
-    color: var(--color-accent);
-    font-weight: 600;
+  .post-publication-kicker .kicker-arrow {
+    display: inline-block;
+    transition: transform var(--transition-fast);
   }
 
-  .crumb-link:hover,
-  .back-link:hover {
-    text-decoration: underline;
-  }
-
-  .crumb-separator {
-    color: var(--color-text-subtle);
-    user-select: none;
-  }
-
-  .crumb-current {
-    color: var(--color-text-muted);
-    max-width: 460px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  @media (max-width: 640px) {
-    .crumb-current {
-      max-width: 180px;
+  @media (hover: hover) and (pointer: fine) {
+    .post-publication-kicker:hover {
+      color: var(--color-accent-hover);
+    }
+    .post-publication-kicker:hover .kicker-arrow {
+      transform: translateX(-3px);
     }
   }
 
@@ -194,16 +155,24 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
     line-height: var(--leading-snug);
   }
 
+  .post-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-top: 1px solid var(--color-border-subtle);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
   .post-metadata-bar {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-3);
     font-size: var(--text-xs);
     color: var(--color-text-subtle);
-    padding: var(--space-3) 0;
-    border-top: 1px solid var(--color-border-subtle);
-    border-bottom: 1px solid var(--color-border-subtle);
   }
 
   .meta-item {
@@ -212,28 +181,21 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
     gap: 4px;
   }
 
+  .meta-dot {
+    color: var(--color-text-subtle);
+    font-size: var(--text-xs);
+    user-select: none;
+  }
+
   .meta-label {
     color: var(--color-text-subtle);
-  }
-
-  .post-tags-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-  }
-
-  .post-tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
   }
 
   .post-actions {
     display: flex;
     align-items: center;
     gap: var(--space-2);
+    margin-left: auto;
   }
 
   .action-pill {
@@ -263,24 +225,27 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
 </style>
 
 <script is:inline>
-  function initCopyArticleBtn() {
-    const btn = document.getElementById('copy-article-btn');
-    const textSpan = document.getElementById('copy-text');
-    if (!btn || !textSpan) return;
-
-    btn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        const orig = textSpan.textContent;
-        textSpan.textContent = 'Copied!';
-        setTimeout(() => {
-          textSpan.textContent = orig;
-        }, 2000);
-      } catch (err) {
-        console.error('Failed to copy', err);
-      }
+  function initCopyArticleBtns() {
+    document.querySelectorAll('.copy-article-btn').forEach((btn) => {
+      if (btn.dataset.initialized) return;
+      btn.dataset.initialized = 'true';
+      btn.addEventListener('click', async () => {
+        const textSpan = btn.querySelector('.copy-text');
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          if (textSpan) {
+            const orig = textSpan.textContent;
+            textSpan.textContent = 'Copied!';
+            setTimeout(() => {
+              textSpan.textContent = orig;
+            }, 2000);
+          }
+        } catch (err) {
+          console.error('Failed to copy', err);
+        }
+      });
     });
   }
-  initCopyArticleBtn();
-  document.addEventListener('astro:after-swap', initCopyArticleBtn);
+  initCopyArticleBtns();
+  document.addEventListener('astro:after-swap', initCopyArticleBtns);
 </script>

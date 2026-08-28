@@ -1,5 +1,6 @@
 ---
 import { site } from '../../data/site';
+import Badge from '../common/Badge.astro';
 
 interface PostRef {
   slug: string;
@@ -9,28 +10,70 @@ interface PostRef {
 }
 
 interface Props {
+  tags?: string[];
   prevPost?: PostRef;
   nextPost?: PostRef;
 }
 
-const { prevPost, nextPost } = Astro.props;
+const { tags = [], prevPost, nextPost } = Astro.props;
 const currentYear = new Date().getFullYear();
 ---
 
 <footer class="post-article-footer">
-  <!-- Author Attribution Box -->
-  <div class="post-author-box">
-    <div class="author-avatar font-mono">AG</div>
-    <div class="author-info">
-      <h4 class="author-name font-mono">{site.name}</h4>
-      <p class="author-bio text-muted">{site.shortBio}</p>
+  <!-- Article Tags & Social Actions Closure Bar -->
+  <div class="post-closure-bar">
+    {tags.length > 0 && (
+      <div class="post-tags-container">
+        <span class="tags-prefix font-mono">Tags:</span>
+        {tags.map((tag) => (
+          <a href={`/blog/tags/${tag}/`} class="tag-pill-link">
+            <Badge variant="neutral" size="sm">#{tag}</Badge>
+          </a>
+        ))}
+      </div>
+    )}
+
+    <div class="post-actions font-mono">
+      <button class="neu-pill action-pill copy-article-btn" type="button" aria-label="Copy article link" title="Copy link to article">
+        <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+        </svg>
+        <span class="copy-text">Copy Link</span>
+      </button>
+      <a
+        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="neu-pill action-pill"
+        aria-label="Share on LinkedIn"
+        title="Share on LinkedIn"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+          <rect width="4" height="12" x="2" y="9"></rect>
+          <circle cx="4" cy="4" r="2"></circle>
+        </svg>
+        <span>Share</span>
+      </a>
     </div>
   </div>
 
+  <!-- Author Signature Card -->
+  <section class="post-author-signature" aria-label="Author Signature">
+    <div class="author-avatar font-mono">AG</div>
+    <div class="author-info">
+      <div class="author-heading-row">
+        <h4 class="author-name font-mono">{site.name}</h4>
+      </div>
+      <p class="author-bio text-muted">{site.shortBio}</p>
+    </div>
+  </section>
+
   <!-- Editorial Disclaimer & Copyright Notice -->
-  <div class="post-disclaimer-box">
+  <section class="post-disclaimer-box" aria-label="Editorial Disclaimer">
     <div class="disclaimer-header">
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="disclaimer-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="disclaimer-icon">
         <circle cx="12" cy="12" r="10"></circle>
         <line x1="12" y1="16" x2="12" y2="12"></line>
         <line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -41,26 +84,34 @@ const currentYear = new Date().getFullYear();
       The technical analyses, design patterns, and opinions expressed in this publication are solely my own and do not represent the views, positions, or strategies of my employer or clients.
     </p>
     <p class="disclaimer-copy text-muted">
-      &copy; {currentYear} {site.name}. All rights reserved. Original content and architecture diagrams may not be reproduced or republished without prior written permission. Brief excerpts and citations with explicit canonical attribution and backlinks are welcome.
+      &copy; {currentYear} {site.name}. All rights reserved. Original content and architecture diagrams may not be reproduced without explicit attribution and backlinks.
     </p>
-  </div>
+  </section>
 
-  <!-- Article Pagination Navigation -->
-  <div class="post-pagination-nav">
-    {prevPost ? (
-      <a href={`/blog/${prevPost.slug}/`} class="nav-prev-link">
-        <span class="pagination-kicker font-mono">&larr; Previous Article</span>
-        <span class="pagination-title">{prevPost.data.title}</span>
-      </a>
-    ) : <div />}
+  <!-- Publication Continuation Navigation (Read Next) -->
+  {(prevPost || nextPost) && (
+    <nav class="post-pagination-section" aria-label="Read Next Architecture Notes">
+      <div class="pagination-header">
+        <p class="swiss-kicker">Read Next</p>
+        <span class="pagination-section-title font-mono">Architecture Notes</span>
+      </div>
+      <div class="post-pagination-nav">
+        {prevPost ? (
+          <a href={`/blog/${prevPost.slug}/`} class="nav-prev-link">
+            <span class="pagination-kicker font-mono">&larr; Previous Note</span>
+            <span class="pagination-title">{prevPost.data.title}</span>
+          </a>
+        ) : <div class="nav-placeholder" />}
 
-    {nextPost && (
-      <a href={`/blog/${nextPost.slug}/`} class="nav-next-link">
-        <span class="pagination-kicker font-mono">Next Article &rarr;</span>
-        <span class="pagination-title">{nextPost.data.title}</span>
-      </a>
-    )}
-  </div>
+        {nextPost && (
+          <a href={`/blog/${nextPost.slug}/`} class="nav-next-link">
+            <span class="pagination-kicker font-mono">Next Note &rarr;</span>
+            <span class="pagination-title">{nextPost.data.title}</span>
+          </a>
+        )}
+      </div>
+    </nav>
+  )}
 </footer>
 
 <style>
@@ -70,23 +121,71 @@ const currentYear = new Date().getFullYear();
     border-top: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
+    gap: var(--space-6);
   }
 
-  .post-author-box {
+  /* Tags & Closure Bar */
+  .post-closure-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px dashed var(--color-border-subtle);
+  }
+
+  .post-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tags-prefix {
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+    margin-right: 2px;
+  }
+
+  .tag-pill-link {
+    text-decoration: none;
+  }
+
+  .post-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-left: auto;
+  }
+
+  .action-pill {
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+  }
+
+  .action-pill:hover {
+    color: var(--color-accent);
+  }
+
+  /* Author Signature Card */
+  .post-author-signature {
     display: flex;
     align-items: center;
     gap: var(--space-4);
     padding: var(--space-5);
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-neu-sm);
   }
 
   .author-avatar {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: var(--radius-md);
     background-color: var(--color-accent);
     color: var(--color-accent-contrast);
@@ -96,17 +195,35 @@ const currentYear = new Date().getFullYear();
     font-weight: 800;
     font-size: 1.125rem;
     flex-shrink: 0;
+    box-shadow: var(--shadow-raised);
+  }
+
+  .author-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .author-heading-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
   }
 
   .author-name {
     font-size: var(--text-sm);
     font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .author-tagline {
+    font-size: var(--text-xs);
   }
 
   .author-bio {
     font-size: var(--text-xs);
     line-height: var(--leading-normal);
-    margin-top: 2px;
   }
 
   /* Disclaimer Box */
@@ -144,12 +261,33 @@ const currentYear = new Date().getFullYear();
     line-height: var(--leading-relaxed);
   }
 
-  /* Pagination Navigation */
+  /* Pagination Navigation (Read Next) */
+  .post-pagination-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+
+  .pagination-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pagination-header .swiss-kicker {
+    margin-bottom: 0;
+  }
+
+  .pagination-section-title {
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+  }
+
   .post-pagination-nav {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-4);
-    margin-top: var(--space-2);
   }
 
   @media (min-width: 640px) {
@@ -168,6 +306,7 @@ const currentYear = new Date().getFullYear();
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     transition: all var(--transition-fast);
+    text-decoration: none;
   }
 
   .nav-next-link {
@@ -192,4 +331,40 @@ const currentYear = new Date().getFullYear();
     font-weight: 600;
     color: var(--color-text);
   }
+
+  .nav-placeholder {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .nav-placeholder {
+      display: block;
+    }
+  }
 </style>
+
+<script is:inline>
+  function initFooterCopyBtn() {
+    document.querySelectorAll('.copy-article-btn').forEach((btn) => {
+      if (btn.dataset.initialized) return;
+      btn.dataset.initialized = 'true';
+      btn.addEventListener('click', async () => {
+        const textSpan = btn.querySelector('.copy-text');
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          if (textSpan) {
+            const orig = textSpan.textContent;
+            textSpan.textContent = 'Copied!';
+            setTimeout(() => {
+              textSpan.textContent = orig;
+            }, 2000);
+          }
+        } catch (err) {
+          console.error('Failed to copy', err);
+        }
+      });
+    });
+  }
+  initFooterCopyBtn();
+  document.addEventListener('astro:after-swap', initFooterCopyBtn);
+</script>
