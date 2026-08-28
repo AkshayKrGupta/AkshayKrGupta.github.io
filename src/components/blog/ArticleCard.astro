@@ -37,8 +37,8 @@ const HeadingComponent = headingTag;
   </div>
 
   <HeadingComponent class={`card-title ${variant === 'standard' ? 'swiss-heading-3' : 'swiss-heading-4'}`}>
-    <a href={postUrl}>
-      {post.data.title}
+    <a href={postUrl} class="card-link">
+      <span>{post.data.title}</span><span class="title-arrow" aria-hidden="true">&nbsp;&rarr;</span>
     </a>
   </HeadingComponent>
 
@@ -46,17 +46,13 @@ const HeadingComponent = headingTag;
 
   {post.data.tags.length > 0 && (
     <div class="card-tags">
-      {variant === 'standard' ? (
-        post.data.tags.map((tag) => (
-          <a href={routes.tag(tag)}>
+      {variant === 'standard'
+        ? post.data.tags.map((tag) => (
             <Badge variant="neutral" size="sm">#{tag}</Badge>
-          </a>
-        ))
-      ) : (
-        post.data.tags.slice(0, 3).map((tag) => (
-          <Badge variant="neutral" size="sm">#{tag}</Badge>
-        ))
-      )}
+          ))
+        : post.data.tags.slice(0, 3).map((tag) => (
+            <Badge variant="neutral" size="sm">#{tag}</Badge>
+          ))}
     </div>
   )}
 </article>
@@ -70,13 +66,54 @@ const HeadingComponent = headingTag;
     border-radius: var(--radius-md);
     display: flex;
     flex-direction: column;
-    transition: transform var(--transition-fast), border-left-color var(--transition-fast), box-shadow var(--transition-fast);
+    cursor: pointer;
+    transition: transform var(--transition-fast), border-left-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
   }
 
-  .article-card:hover {
-    transform: translateY(-2px);
+  /* Desktop Hover Interactions */
+  @media (hover: hover) and (pointer: fine) {
+    .article-card:hover {
+      transform: translateY(-2px);
+      border-left-color: var(--color-accent);
+      box-shadow: var(--shadow-raised);
+    }
+
+    .article-card:hover .card-title a {
+      color: var(--color-accent);
+    }
+
+    .article-card:hover .title-arrow {
+      opacity: 1;
+      transform: translateX(3px);
+      color: var(--color-accent);
+    }
+  }
+
+  /* Tactile Feedback for Tap / Press */
+  .article-card:active {
+    transform: translateY(0) scale(0.995);
+    background-color: var(--color-surface-raised);
+  }
+
+  /* Keyboard Focus Styling */
+  .article-card:focus-within {
     border-left-color: var(--color-accent);
     box-shadow: var(--shadow-raised);
+  }
+
+  .card-title a:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: var(--radius-xs);
+  }
+
+  /* Stretched Link: Makes entire card clickable */
+  .card-title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+    z-index: 1;
   }
 
   /* Standard Variant (Blog Archive & Tag pages) */
@@ -125,17 +162,45 @@ const HeadingComponent = headingTag;
 
   .card-title a {
     color: var(--color-text);
+    text-decoration: none;
     transition: color var(--transition-fast);
+    display: inline;
   }
 
-  .card-title a:hover {
-    color: var(--color-accent);
+  /* Animated Arrow with Orphan Prevention */
+  .title-arrow {
+    display: inline-block;
+    white-space: nowrap;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: transform var(--transition-fast), opacity var(--transition-fast), color var(--transition-fast);
   }
 
+  /* Tags hidden on mobile (< 640px) to maximize screen real estate */
   .card-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: var(--space-1);
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .card-tags {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: var(--space-1);
+      pointer-events: none;
+    }
+  }
+
+  /* Accessibility: Prefers Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .article-card,
+    .title-arrow {
+      transition: none !important;
+      transform: none !important;
+    }
   }
 </style>
