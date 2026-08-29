@@ -10,6 +10,11 @@ tags:
   - documentation
 draft: true
 featured: false
+faqs:
+  - question: "What is the purpose of this MDX reference guide?"
+    answer: "It serves as an authoring cheatsheet for frontmatter specifications, MDX components, and SEO structured data."
+  - question: "How does FAQ schema help search ranking and AI discovery?"
+    answer: "Defining faqs in frontmatter automatically injects Schema.org FAQPage JSON-LD, enabling rich Q&A snippets on Google, Perplexity, and AI search engines."
 ---
 
 import Callout from '../../../components/mdx/Callout.astro';
@@ -44,6 +49,13 @@ draft: true                      # Set to true while writing; set to false when 
 featured: false                  # Set to true to highlight the post in featured sections
 canonicalUrl: "https://..."      # If republishing an article originally posted elsewhere
 series: "MCP In Practice"        # Optional series grouping identifier
+
+# OPTIONAL FAQ SCHEMA (Generates Schema.org FAQPage Rich Snippets for SEO & AI):
+faqs:
+  - question: "When should I use this pattern?"
+    answer: "Use this pattern when building systems that require high throughput with strict compliance guarantees."
+  - question: "What are the common trade-offs?"
+    answer: "Increased initial latency in exchange for strict auditability and deterministic state transitions."
 ---
 ```
 

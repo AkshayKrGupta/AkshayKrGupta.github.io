@@ -1,8 +1,14 @@
 ---
 import { site } from '../../data/site';
+import { projects } from '../../data/projects';
+
+interface FAQItem {
+  question: string;
+  answer: string;
+}
 
 interface Props {
-  type?: 'website' | 'article';
+  type?: 'website' | 'article' | 'profile';
   title?: string;
   description?: string;
   publishDate?: Date | string;
@@ -10,6 +16,9 @@ interface Props {
   url?: string;
   image?: string;
   tags?: string[];
+  faqs?: FAQItem[];
+  wordCount?: number;
+  readingTime?: string;
 }
 
 const {
@@ -21,9 +30,58 @@ const {
   url = site.url,
   image = `${site.url}/og-image.png`,
   tags = [],
+  faqs = [],
+  wordCount,
+  readingTime,
 } = Astro.props;
 
-// Schema for Person & WebSite (Homepage)
+// Central E-E-A-T Person Entity (Canonical Author & Architect ID)
+const personEntity = {
+  '@type': 'Person',
+  '@id': `${site.url}/#person`,
+  name: site.name,
+  alternateName: site.shortName,
+  jobTitle: site.jobTitle,
+  description: site.shortBio,
+  url: site.url,
+  image: `${site.url}${site.profile.image}`,
+  sameAs: [site.social.github, site.social.linkedin].filter(Boolean),
+  homeLocation: {
+    '@type': 'Place',
+    name: site.location || 'Bengaluru, India',
+    sameAs: site.locationWikidata || 'https://www.wikidata.org/wiki/Q1355',
+  },
+  knowsAbout: site.expertise.map((item) => ({
+    '@type': 'Thing',
+    name: item.name,
+    ...(item.sameAs ? { sameAs: item.sameAs } : {}),
+  })),
+};
+
+// Open-Source Repositories & Software Applications
+const softwareEntities = projects.map((project) => ({
+  '@type': project.githubUrl ? 'SoftwareSourceCode' : 'SoftwareApplication',
+  '@id': `${site.url}/#${project.id}`,
+  name: project.name,
+  description: project.description,
+  ...(project.liveUrl ? { url: project.liveUrl } : {}),
+  ...(project.githubUrl ? { codeRepository: project.githubUrl } : {}),
+  programmingLanguage: project.technologies.filter((t) =>
+    ['TypeScript', 'Swift', 'Web Crypto API', 'Wasm'].includes(t)
+  ),
+  author: {
+    '@id': `${site.url}/#person`,
+  },
+  creator: {
+    '@id': `${site.url}/#person`,
+  },
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: project.technologies.includes('macOS')
+    ? 'macOS'
+    : 'Cross-platform, Web Browser',
+}));
+
+// Schema for Person, ProfilePage, WebSite, & Software Repositories (Homepage / Sitewide)
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -31,7 +89,7 @@ const websiteSchema = {
       '@type': 'WebSite',
       '@id': `${site.url}/#website`,
       url: site.url,
-      name: `${site.name} — Enterprise Architecture & AI in Regulated Industries`,
+      name: `${site.name} — ${site.title}`,
       description: site.description,
       publisher: {
         '@id': `${site.url}/#person`,
@@ -39,94 +97,127 @@ const websiteSchema = {
       inLanguage: 'en-US',
     },
     {
-      '@type': 'Person',
-      '@id': `${site.url}/#person`,
-      name: site.name,
-      jobTitle: site.title,
-      description: site.shortBio,
+      '@type': 'ProfilePage',
+      '@id': `${site.url}/#profilepage`,
       url: site.url,
-      sameAs: [site.social.github, site.social.linkedin].filter(Boolean),
-      knowsAbout: [
-        'Enterprise Architecture',
-        'Model Context Protocol (MCP)',
-        'AI in Regulated Industries',
-        'Distributed Systems & Consensus',
-        'FinTech Engineering',
-        'High-Throughput Microservices',
-        'Cloud Infrastructure & Kubernetes',
-      ],
-    },
-  ],
-};
-
-// Schema for BlogPosting & Breadcrumbs (Article pages)
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'BlogPosting',
-      '@id': `${url}#article`,
+      name: `${site.name} — Portfolio & Architecture Notes`,
+      description: site.description,
       isPartOf: {
         '@id': `${site.url}/#website`,
       },
-      headline: title,
-      description: description,
-      url: url,
-      image: image,
-      datePublished: publishDate ? new Date(publishDate).toISOString() : undefined,
-      dateModified: modifiedDate ? new Date(modifiedDate).toISOString() : (publishDate ? new Date(publishDate).toISOString() : undefined),
-      keywords: tags.join(', '),
-      about: tags.map((tag) => ({
-        '@type': 'Thing',
-        name: tag,
+      mainEntity: {
+        '@id': `${site.url}/#person`,
+      },
+      hasPart: softwareEntities.map((s) => ({
+        '@id': s['@id'],
       })),
-      author: {
-        '@type': 'Person',
-        name: site.name,
-        jobTitle: site.title,
-        url: site.url,
-        sameAs: [site.social.github, site.social.linkedin].filter(Boolean),
-      },
-      publisher: {
-        '@type': 'Person',
-        name: site.name,
-        url: site.url,
-      },
-      mainEntityOfPage: {
-        '@type': 'WebPage',
-        '@id': url,
-      },
-      speakable: {
-        '@type': 'SpeakableSpecification',
-        cssSelector: ['.post-description', '.prose-content > p:first-of-type'],
-      },
       inLanguage: 'en-US',
     },
-    {
-      '@type': 'BreadcrumbList',
-      '@id': `${url}#breadcrumb`,
-      itemListElement: [
-        {
-          '@type': 'ListItem',
-          position: 1,
-          name: 'Home',
-          item: site.url,
-        },
-        {
-          '@type': 'ListItem',
-          position: 2,
-          name: 'Writing',
-          item: `${site.url}/blog/`,
-        },
-        {
-          '@type': 'ListItem',
-          position: 3,
-          name: title,
-          item: url,
-        },
-      ],
-    },
+    personEntity,
+    ...softwareEntities,
   ],
+};
+
+// Schema for BlogPosting, Breadcrumbs, & FAQs (Article pages)
+const articleGraph: any[] = [
+  {
+    '@type': 'BlogPosting',
+    '@id': `${url}#article`,
+    isPartOf: {
+      '@id': `${site.url}/#website`,
+    },
+    headline: title,
+    description: description,
+    url: url,
+    image: image,
+    datePublished: publishDate ? new Date(publishDate).toISOString() : undefined,
+    dateModified: modifiedDate
+      ? new Date(modifiedDate).toISOString()
+      : publishDate
+        ? new Date(publishDate).toISOString()
+        : undefined,
+    keywords: tags.join(', '),
+    ...(wordCount ? { wordCount } : {}),
+    ...(readingTime ? { timeRequired: `PT${parseInt(readingTime) || 5}M` } : {}),
+    inLanguage: 'en-US',
+    copyrightYear: publishDate ? new Date(publishDate).getFullYear() : new Date().getFullYear(),
+    copyrightHolder: {
+      '@type': 'Person',
+      '@id': `${site.url}/#person`,
+      name: site.name,
+    },
+    about: tags.map((tag) => ({
+      '@type': 'Thing',
+      name: tag,
+    })),
+    author: {
+      '@type': 'Person',
+      '@id': `${site.url}/#person`,
+      name: site.name,
+      jobTitle: site.jobTitle,
+      url: site.url,
+      sameAs: [site.social.github, site.social.linkedin].filter(Boolean),
+    },
+    publisher: {
+      '@type': 'Person',
+      '@id': `${site.url}/#person`,
+      name: site.name,
+      url: site.url,
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': url,
+    },
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['.post-description', '.prose-content > p:first-of-type'],
+    },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    '@id': `${url}#breadcrumb`,
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: site.url,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Writing',
+        item: `${site.url}/blog/`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: title,
+        item: url,
+      },
+    ],
+  },
+];
+
+// If article defines FAQs, attach FAQPage structured data graph
+if (faqs && faqs.length > 0) {
+  articleGraph.push({
+    '@type': 'FAQPage',
+    '@id': `${url}#faq`,
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  });
+}
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@graph': articleGraph,
 };
 
 const jsonLd = type === 'article' ? articleSchema : websiteSchema;

@@ -15,6 +15,14 @@ const blogCollection = defineCollection({
       featured: z.boolean().default(false),
       canonicalUrl: z.string().url().optional(),
       series: z.string().optional(),
+      faqs: z
+        .array(
+          z.object({
+            question: z.string(),
+            answer: z.string(),
+          })
+        )
+        .optional(),
     }),
 });
 
