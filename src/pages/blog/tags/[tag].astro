@@ -24,12 +24,17 @@ export async function getStaticPaths() {
 
 const { tag } = Astro.params;
 const { posts } = Astro.props;
+
+const tagTitle = `#${tag} — Architecture Notes`;
+const tagDesc = `Explore ${posts.length} technical architecture ${posts.length === 1 ? 'note' : 'notes'} and system design patterns covering #${tag} by ${site.name}.`;
+const tagCanonical = `${site.url}${routes.tag(tag!)}`;
 ---
 
 <BaseLayout
-  title={`#${tag} — Architecture Notes`}
-  description={`Architecture Notes tagged with #${tag}`}
+  title={tagTitle}
+  description={tagDesc}
   image="/og-articles-image.png"
+  canonicalUrl={tagCanonical}
 >
   <div class="page-container tag-archive-container">
     <header class="tag-archive-header">

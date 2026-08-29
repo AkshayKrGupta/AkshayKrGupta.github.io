@@ -5,15 +5,23 @@
 export function getReadingTime(content: string): string {
   if (!content) return '1 min read';
   
-  // Clean markdown syntax, HTML tags, and code blocks
+  const words = getWordCount(content);
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  
+  return `${minutes} min read`;
+}
+
+/**
+ * Calculate exact word count for markdown/MDX content, stripping tags and code.
+ */
+export function getWordCount(content: string): number {
+  if (!content) return 0;
+  
   const cleanContent = content
     .replace(/```[\s\S]*?```/g, '') // remove code blocks
     .replace(/<[^>]*>/g, '') // remove HTML tags
     .replace(/[#*`_~\[\]()>-]/g, '') // remove markdown symbols
     .trim();
 
-  const words = cleanContent.split(/\s+/).filter(Boolean).length;
-  const minutes = Math.max(1, Math.ceil(words / 200));
-  
-  return `${minutes} min read`;
+  return cleanContent.split(/\s+/).filter(Boolean).length;
 }

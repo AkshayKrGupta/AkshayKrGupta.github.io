@@ -2,6 +2,11 @@
 import { site } from '../../data/site';
 import JsonLd from './JsonLd.astro';
 
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
 interface Props {
   title?: string;
   description?: string;
@@ -11,6 +16,9 @@ interface Props {
   modifiedDate?: Date | string;
   tags?: string[];
   canonicalUrl?: string;
+  faqs?: FAQItem[];
+  wordCount?: number;
+  readingTime?: string;
 }
 
 const {
@@ -22,6 +30,9 @@ const {
   modifiedDate,
   tags = [],
   canonicalUrl,
+  faqs = [],
+  wordCount,
+  readingTime,
 } = Astro.props;
 
 const pageTitle = title
@@ -38,6 +49,11 @@ const imageUrl = image.startsWith('http') ? image : new URL(image, Astro.site ||
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <meta http-equiv="X-Content-Type-Options" content="nosniff" />
 <meta name="format-detection" content="telephone=no" />
+
+<!-- Advanced Search Engine & AI Crawler Directives (Enables Large Previews & Full Snippets) -->
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 
 <!-- Font Preconnect for Zero-Latency Handshake -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -73,6 +89,9 @@ const imageUrl = image.startsWith('http') ? image : new URL(image, Astro.site ||
 {article && modifiedDate && (
   <meta property="article:modified_time" content={new Date(modifiedDate).toISOString()} />
 )}
+{article && <meta property="article:author" content={site.url} />}
+{article && <meta property="article:publisher" content={site.url} />}
+{article && tags.length > 0 && <meta property="article:section" content={tags[0]} />}
 {article && tags.map((tag) => (
   <meta property="article:tag" content={tag} />
 ))}
@@ -94,4 +113,7 @@ const imageUrl = image.startsWith('http') ? image : new URL(image, Astro.site ||
   publishDate={publishDate}
   modifiedDate={modifiedDate}
   tags={tags}
+  faqs={faqs}
+  wordCount={wordCount}
+  readingTime={readingTime}
 />

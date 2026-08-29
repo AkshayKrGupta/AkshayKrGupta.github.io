@@ -6,13 +6,18 @@ import PostFooter from '../components/blog/PostFooter.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
 import RelatedPosts from '../components/blog/RelatedPosts.astro';
 import ArchitectureBackground from '../components/blog/ArchitectureBackground.astro';
-import { getReadingTime } from '../utils/readingTime';
+import { getReadingTime, getWordCount } from '../utils/readingTime';
 import type { BlogPost } from '../utils/blog';
 
 interface Heading {
   depth: number;
   slug: string;
   text: string;
+}
+
+interface FAQItem {
+  question: string;
+  answer: string;
 }
 
 interface Props {
@@ -28,6 +33,7 @@ interface Props {
   nextPost?: BlogPost;
   relatedPosts?: BlogPost[];
   rawContent?: string;
+  faqs?: FAQItem[];
 }
 
 const {
@@ -43,9 +49,11 @@ const {
   nextPost,
   relatedPosts = [],
   rawContent = '',
+  faqs = [],
 } = Astro.props;
 
 const readingTime = getReadingTime(rawContent);
+const wordCount = getWordCount(rawContent);
 const socialImage = typeof heroImage === 'object' && heroImage !== null ? (heroImage as ImageMetadata).src : (heroImage || '/og-articles-image.png');
 ---
 
@@ -57,6 +65,9 @@ const socialImage = typeof heroImage === 'object' && heroImage !== null ? (heroI
   publishDate={pubDate}
   modifiedDate={updatedDate}
   tags={tags}
+  faqs={faqs}
+  wordCount={wordCount}
+  readingTime={readingTime}
 >
   <!-- Architectural Visual Signature Background (Zero JS, GPU Layer) -->
   <ArchitectureBackground />
