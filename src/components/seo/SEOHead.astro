@@ -15,6 +15,7 @@ interface Props {
   publishDate?: Date | string;
   modifiedDate?: Date | string;
   tags?: string[];
+  keywords?: string[];
   canonicalUrl?: string;
   faqs?: FAQItem[];
   wordCount?: number;
@@ -29,12 +30,14 @@ const {
   publishDate,
   modifiedDate,
   tags = [],
+  keywords = [],
   canonicalUrl,
   faqs = [],
   wordCount,
   readingTime,
 } = Astro.props;
 
+const allKeywords = Array.from(new Set([...tags, ...keywords]));
 const pageTitle = title
   ? (title.includes(site.name) || title.includes(site.shortName) ? title : `${title} — ${site.name}`)
   : `${site.name} — ${site.title}`;
@@ -71,6 +74,7 @@ const imageUrl = image.startsWith('http') ? image : new URL(image, Astro.site ||
 <meta name="title" content={pageTitle} />
 <meta name="description" content={description} />
 <meta name="author" content={site.name} />
+{allKeywords.length > 0 && <meta name="keywords" content={allKeywords.join(', ')} />}
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={article ? 'article' : 'website'} />
@@ -92,7 +96,7 @@ const imageUrl = image.startsWith('http') ? image : new URL(image, Astro.site ||
 {article && <meta property="article:author" content={site.url} />}
 {article && <meta property="article:publisher" content={site.url} />}
 {article && tags.length > 0 && <meta property="article:section" content={tags[0]} />}
-{article && tags.map((tag) => (
+{article && allKeywords.map((tag) => (
   <meta property="article:tag" content={tag} />
 ))}
 
@@ -112,7 +116,7 @@ const imageUrl = image.startsWith('http') ? image : new URL(image, Astro.site ||
   image={imageUrl}
   publishDate={publishDate}
   modifiedDate={modifiedDate}
-  tags={tags}
+  tags={allKeywords}
   faqs={faqs}
   wordCount={wordCount}
   readingTime={readingTime}

@@ -27,6 +27,7 @@ interface Props {
   updatedDate?: Date;
   author: string;
   tags: string[];
+  keywords?: string[];
   heroImage?: string | ImageMetadata;
   headings: Heading[];
   prevPost?: BlogPost;
@@ -43,6 +44,7 @@ const {
   updatedDate,
   author,
   tags,
+  keywords = [],
   heroImage,
   headings,
   prevPost,
@@ -65,6 +67,7 @@ const socialImage = typeof heroImage === 'object' && heroImage !== null ? (heroI
   publishDate={pubDate}
   modifiedDate={updatedDate}
   tags={tags}
+  keywords={keywords}
   faqs={faqs}
   wordCount={wordCount}
   readingTime={readingTime}

@@ -4,10 +4,13 @@ description: "A complete authoring style guide, architectural diagramming refere
 pubDate: 2026-08-26
 author: "Akshay K Gupta"
 tags:
-  - architecture
+  - software-engineering
+  - enterprise-systems
+keywords:
   - style-guide
   - mdx
   - documentation
+  - architecture
 draft: true
 featured: false
 faqs:
@@ -37,13 +40,20 @@ title: "Article Title (Concise & Descriptive)"
 description: "A 1-2 sentence compelling summary for search snippets, social cards, and article listings."
 pubDate: 2026-08-26
 
+# UI CATEGORIES (Keep to 1-2 core pillars for clean badges and sidebar):
+tags:
+  - enterprise-systems           # One of: enterprise-systems, artificial-intelligence, model-context-protocol, software-engineering, security
+  - software-engineering
+
+# BACKGROUND SEO KEYWORDS (Invisible to humans, injected into JSON-LD & meta tags):
+keywords:
+  - distributed-systems
+  - api-gateway
+  - microservices
+
 # OPTIONAL FIELDS:
 updatedDate: 2026-08-27          # Shown if the article receives a major revision
 author: "Akshay K Gupta"         # Defaults automatically to site.name if omitted
-tags:
-  - enterprise-architecture      # Lowercase kebab-case tags
-  - genai
-  - distributed-systems
 heroImage: "/profile.jpg"        # Optional header hero image
 draft: true                      # Set to true while writing; set to false when ready to publish!
 featured: false                  # Set to true to highlight the post in featured sections

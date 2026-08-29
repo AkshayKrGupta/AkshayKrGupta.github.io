@@ -10,6 +10,7 @@ const blogCollection = defineCollection({
       updatedDate: z.coerce.date().optional(),
       author: z.string().default('Akshay K Gupta'),
       tags: z.array(z.string()).default([]),
+      keywords: z.array(z.string()).default([]),
       heroImage: image().optional(),
       draft: z.boolean().default(false),
       featured: z.boolean().default(false),

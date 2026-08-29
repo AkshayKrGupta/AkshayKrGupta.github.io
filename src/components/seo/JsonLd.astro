@@ -137,6 +137,7 @@ const articleGraph: any[] = [
         ? new Date(publishDate).toISOString()
         : undefined,
     keywords: tags.join(', '),
+    articleSection: tags.length > 0 ? tags[0] : undefined,
     ...(wordCount ? { wordCount } : {}),
     ...(readingTime ? { timeRequired: `PT${parseInt(readingTime) || 5}M` } : {}),
     inLanguage: 'en-US',
