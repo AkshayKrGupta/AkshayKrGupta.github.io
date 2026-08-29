@@ -6,26 +6,12 @@ export async function GET(context: any) {
   const robotsTxt = `User-agent: *
 Allow: /
 
-# AI Crawlers & Answer Engines
-User-agent: GPTBot
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: Applebot-Extended
-Allow: /
-
-# Discovery
+# Discovery & Sitemap
 Sitemap: ${siteUrl}/sitemap.xml
-# LLM Context: ${siteUrl}/llms.txt
-# LLM Full Corpus: ${siteUrl}/llms-full.txt
+
+# LLM & AI Agent Context
+# ${siteUrl}/llms.txt
+# ${siteUrl}/llms-full.txt
 `;
 
   return new Response(robotsTxt, {
