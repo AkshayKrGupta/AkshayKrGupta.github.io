@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BentoCard from '../components/bento/BentoCard.astro';
+import ArchitectureBackground from '../components/blog/ArchitectureBackground.astro';
 import { site } from '../data/site';
 import { nowData } from '../data/now';
 ---
@@ -9,6 +10,9 @@ import { nowData } from '../data/now';
   title="Now"
   description={nowData.headline}
 >
+  <!-- Architectural Visual Signature Background (Zero JS, Peripheral Gutters) -->
+  <ArchitectureBackground />
+
   <div class="page-container now-page-container">
     <header class="now-header">
       <p class="swiss-kicker">Status &amp; Focus</p>
@@ -40,6 +44,8 @@ import { nowData } from '../data/now';
 
 <style>
   .now-page-container {
+    position: relative;
+    z-index: 1;
     padding-top: var(--space-7);
     padding-bottom: var(--space-10);
     max-width: 840px;

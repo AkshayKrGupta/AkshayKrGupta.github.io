@@ -1,19 +1,40 @@
 ---
+import type { GetStaticPaths, Page } from 'astro';
+import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Badge from '../../components/common/Badge.astro';
 import ArticleCard from '../../components/blog/ArticleCard.astro';
+import ArchitectureBackground from '../../components/blog/ArchitectureBackground.astro';
 import { site } from '../../data/site';
 import { getPublishedPosts, getAllUniqueTags, routes } from '../../utils/blog';
 
-const sortedPosts = await getPublishedPosts();
+export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
+  const sortedPosts = await getPublishedPosts();
+  // Paginate 10 architecture notes per page
+  return paginate(sortedPosts, { pageSize: 10 });
+};
+
+interface Props {
+  page: Page<CollectionEntry<'blog'>>;
+}
+
+const { page } = Astro.props;
+const allPosts = await getPublishedPosts();
 const allTags = await getAllUniqueTags();
+
+const pageTitle = page.currentPage > 1 
+  ? `${site.blog.name} (Page ${page.currentPage})` 
+  : site.blog.name;
 ---
 
 <BaseLayout
-  title={site.blog.name}
+  title={pageTitle}
   description={site.blog.description}
   image="/og-articles-image.png"
 >
+  <!-- Architectural Visual Signature Background (Zero JS, Peripheral Gutters) -->
+  <ArchitectureBackground />
+
   <div class="page-container blog-index-container">
     <div class="blog-grid">
       <!-- Main Content Column (~75% on Desktop, 100% on Mobile) -->
@@ -22,23 +43,52 @@ const allTags = await getAllUniqueTags();
           <div class="kicker-row">
             <p class="swiss-kicker">Publications &amp; Articles</p>
             <span class="meta-dot font-mono" aria-hidden="true">&bull;</span>
-            <span class="notes-count font-mono">{sortedPosts.length} {sortedPosts.length === 1 ? 'note' : 'notes'}</span>
+            <span class="notes-count font-mono">{allPosts.length} {allPosts.length === 1 ? 'note' : 'notes'}</span>
           </div>
           <h1 class="swiss-heading-1">{site.blog.name}</h1>
           <p class="text-muted blog-desc">{site.blog.description}</p>
         </header>
 
         <div class="articles-archive">
-          {sortedPosts.length === 0 ? (
+          {page.data.length === 0 ? (
             <div class="empty-state">
               <p class="text-muted">No architecture notes published yet. Check back soon!</p>
             </div>
           ) : (
-            sortedPosts.map((post) => (
+            page.data.map((post) => (
               <ArticleCard post={post} variant="standard" />
             ))
           )}
         </div>
+
+        <!-- Pagination Bar (Active when total pages > 1) -->
+        {page.lastPage > 1 && (
+          <nav class="pagination-bar" aria-label="Blog Page Navigation">
+            {page.url.prev ? (
+              <a href={page.url.prev} class="neu-pill pagination-btn pagination-prev font-mono">
+                <span aria-hidden="true">&larr;</span> Newer Notes
+              </a>
+            ) : (
+              <span class="neu-pill pagination-btn pagination-disabled font-mono" aria-disabled="true">
+                <span aria-hidden="true">&larr;</span> Newer Notes
+              </span>
+            )}
+
+            <span class="pagination-info font-mono">
+              Page {page.currentPage} of {page.lastPage}
+            </span>
+
+            {page.url.next ? (
+              <a href={page.url.next} class="neu-pill pagination-btn pagination-next font-mono">
+                Older Notes <span aria-hidden="true">&rarr;</span>
+              </a>
+            ) : (
+              <span class="neu-pill pagination-btn pagination-disabled font-mono" aria-disabled="true">
+                Older Notes <span aria-hidden="true">&rarr;</span>
+              </span>
+            )}
+          </nav>
+        )}
       </main>
 
       <!-- Sticky Topics Sidebar (~25% Desktop Only, Hidden on Mobile) -->
@@ -50,10 +100,10 @@ const allTags = await getAllUniqueTags();
             </div>
             <div class="topics-list">
               <a href={routes.blog} class="topic-item">
-                <Badge variant="accent" size="sm">All Notes ({sortedPosts.length})</Badge>
+                <Badge variant="accent" size="sm">All Notes ({allPosts.length})</Badge>
               </a>
               {allTags.map((tag) => {
-                const count = sortedPosts.filter((p) => p.data.tags.includes(tag)).length;
+                const count = allPosts.filter((p) => p.data.tags.includes(tag)).length;
                 return (
                   <a href={routes.tag(tag)} class="topic-item">
                     <Badge variant="neutral" size="sm">#{tag} ({count})</Badge>
@@ -70,6 +120,8 @@ const allTags = await getAllUniqueTags();
 
 <style>
   .blog-index-container {
+    position: relative;
+    z-index: 1;
     padding-top: var(--space-7);
     padding-bottom: var(--space-10);
   }
@@ -140,6 +192,59 @@ const allTags = await getAllUniqueTags();
     background-color: var(--color-surface);
     border: 1px dashed var(--color-border);
     border-radius: var(--radius-md);
+  }
+
+  /* Pagination Bar */
+  .pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-xs);
+    text-decoration: none;
+    padding: 8px 16px;
+    min-height: 40px;
+    transition: transform var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .pagination-prev:hover,
+  .pagination-next:hover {
+    color: var(--color-accent);
+    transform: translateY(-1px);
+  }
+
+  .pagination-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .pagination-info {
+    font-size: var(--text-xs);
+    color: var(--color-text-subtle);
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+
+  @media (max-width: 480px) {
+    .pagination-bar {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .pagination-info {
+      width: 100%;
+      order: -1;
+      margin-bottom: var(--space-2);
+    }
   }
 
   /* Sticky Topics Sidebar (Desktop Only) */
