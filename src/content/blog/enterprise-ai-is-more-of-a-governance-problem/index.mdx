@@ -15,6 +15,27 @@ keywords:
 
 draft: false
 featured: true
+faqs:
+  - question: "Why is enterprise AI considered a data governance problem rather than an LLM problem?"
+    answer: "Commercial LLMs are already capable enough for enterprise tasks, but they cannot safely access corporate data without strict governance. The real challenge lies in resolving legacy permissions, enforcing zero-trust access, preventing PII exposure, and complying with data residency laws before feeding internal data into the model."
+
+  - question: "What is the RBAC crisis in enterprise AI deployments?"
+    answer: "The RBAC (Role-Based Access Control) crisis occurs when an enterprise AI indexes internal systems like SharePoint or Google Drive and inherits outdated, over-permissive access rights. Because an LLM can search and correlate files instantly, it inadvertently exposes sensitive documents—such as unencrypted HR files or M&A plans—that were mistakenly left open to all employees."
+
+  - question: "How does an enterprise AI Gateway protect PII in LLM prompts?"
+    answer: "An enterprise AI Gateway acts as an interception layer between users and language models. It automatically detects and masks sensitive Personally Identifiable Information (PII) before the prompt reaches the LLM context window, then securely re-hydrates the data in the final response so actual customer identities are never exposed during inference."
+
+  - question: "What is the difference between data storage residency and AI inference residency?"
+    answer: "Data storage residency ensures internal databases remain within a specific legal jurisdiction, whereas AI inference residency requires that the actual computing and token processing occur within that same geographic boundary. Sending regulated local data to an offshore AI model for processing violates data sovereignty laws like GDPR."
+
+  - question: "What is the role of an Enterprise AI Gateway pattern?"
+    answer: "An Enterprise AI Gateway serves as a centralized architectural control point for all AI traffic. It standardizes model access across the organization by handling prompt validation, RBAC verification, PII redaction, geolocation-based model routing, rate limiting (FinOps), and immutable audit logging."
+
+  - question: "How does enterprise AI governance prevent Shadow AI?"
+    answer: "If enterprise approval processes are overly restrictive or slow, employees inevitably copy-paste sensitive corporate data into unmonitored consumer AI tools. Effective governance provides secure, approved enterprise AI environments fast enough to satisfy employee productivity demands while keeping corporate data inside the organizational perimeter."
+
+  - question: "Why is traceability required for enterprise generative AI in regulated industries?"
+    answer: "Regulated organizations are legally liable for decisions influenced by AI. Traceability requires maintaining an immutable audit trail of the user's identity, the specific context chunks retrieved via RAG, the system prompts applied, and the raw model outputs to prove compliance and support human-in-the-loop validation during audits."
 ---
 import Mermaid from '../../../components/mdx/Mermaid.astro';
 import Callout from '../../../components/mdx/Callout.astro';
