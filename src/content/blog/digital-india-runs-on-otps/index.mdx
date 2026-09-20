@@ -16,6 +16,27 @@ keywords:
   - telecom-infrastructure
 draft: false
 featured: true
+faqs:
+  - question: "Why are SMS OTPs becoming a major bottleneck for digital businesses in India?"
+    answer: "Despite their ubiquity, SMS OTPs suffer from non-deterministic latencies, multi-hop signaling delays, and telecom network congestion. As India processes over 1.8 billion A2P messages daily, telecom queues often cause delivery times to stretch from a few seconds to over 45 seconds, leading to dropped conversions and abandoned checkouts."
+
+  - question: "Why do users frequently experience 'Invalid or Expired OTP' errors when hitting resend?"
+    answer: "This happens due to the asynchronous out-of-order resend loop. When a user hits 'resend' because an SMS is delayed in a telecom queue, the delayed first code eventually arrives. However, the system has already invalidated it in favor of the newly generated second code, which is still stuck in transit, trapping the user in a failure loop."
+
+  - question: "What makes traditional SMS OTPs vulnerable to fraud and social engineering?"
+    answer: "SMS payloads are unencrypted over legacy carrier signaling links, leaving them exposed to SIM-swap fraud and baseband interception. Furthermore, the cultural normalization of reading OTPs aloud to cab drivers and delivery agents has conditioned users to easily fall for voice phishing and screen-sharing scams."
+
+  - question: "How do Passkeys (FIDO2) solve the latency and security issues of SMS OTPs?"
+    answer: "Passkeys use on-device hardware biometric enclaves (like Face ID or Fingerprint) to sign cryptographic challenges locally. This eliminates telecom network dependencies, drops verification latency to under 200 milliseconds, and creates a mathematically phishing-resistant barrier against Adversary-in-the-Middle (AiTM) attacks."
+
+  - question: "What is Silent Network Authentication (CAMARA) in modern identity architecture?"
+    answer: "Silent Network Authentication is a modern telco API standard (like GSMA Open Gateway/CAMARA) that allows apps to verify a user's identity directly against the carrier's core database using their active cellular data session. The authentication happens instantly in the background without generating an SMS code or requiring manual entry."
+
+  - question : "How does In-App Device Binding (the UPI pattern) bypass the need for SMS OTPs?"
+    answer: "In-App Device Binding ties an initial cryptographic key pair directly to a mobile device’s hardware keystore. Once the device is registered, all subsequent app-level transactions are securely signed via local payload hashes, removing the need to generate or transmit out-of-band verification codes."
+
+  - question: "How does Continuous Adaptive Risk and Trust Assessment (CARTA) optimize user authentication?"
+    answer: "CARTA dynamically evaluates risk rather than forcing a static OTP gate for every action. By analyzing background telemetry, device attestation, and geo-velocity, CARTA allows low-risk sessions to proceed seamlessly while triggering step-up authentication (such as biometrics) only for genuine anomalies."
 ---
 
 Before you even step out of bed, the protocol has already started.
