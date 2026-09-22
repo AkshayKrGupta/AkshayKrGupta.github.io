@@ -15,7 +15,7 @@ const filteredHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 
 {filteredHeadings.length > 0 && (
   <>
-    <!-- Mobile Collapsible Table of Contents (0 JS, Native HTML5) -->
+    <!-- Mobile Inline Accordion TOC (at top of post) -->
     <details class="mobile-toc-details">
       <summary class="mobile-toc-summary neu-pill font-mono">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -40,6 +40,59 @@ const filteredHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
         </ul>
       </nav>
     </details>
+
+    <!-- Mobile Floating TOC Trigger Pill (Appears upon scrolling) -->
+    <div id="mobile-toc-floating-wrap" class="mobile-toc-floating-wrap" aria-hidden="true">
+      <button
+        id="mobile-toc-floating-btn"
+        class="mobile-toc-floating-btn neu-pill font-mono"
+        type="button"
+        aria-label="Open Table of Contents"
+        aria-expanded="false"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="8" x2="21" y1="6" y2="6"></line>
+          <line x1="8" x2="21" y1="12" y2="12"></line>
+          <line x1="8" x2="21" y1="18" y2="18"></line>
+          <line x1="3" x2="3.01" y1="6" y2="6"></line>
+          <line x1="3" x2="3.01" y1="12" y2="12"></line>
+          <line x1="3" x2="3.01" y1="18" y2="18"></line>
+        </svg>
+        <span>Contents</span>
+        <span id="mobile-toc-progress-val" class="toc-progress-badge">0%</span>
+      </button>
+    </div>
+
+    <!-- Mobile Floating TOC Drawer / Bottom Sheet -->
+    <dialog id="mobile-toc-drawer" class="mobile-toc-drawer" aria-label="Table of Contents Modal">
+      <div class="mobile-toc-drawer-backdrop" id="mobile-toc-drawer-backdrop"></div>
+      <div class="mobile-toc-drawer-sheet">
+        <div class="mobile-toc-drawer-header">
+          <div class="header-title-wrap">
+            <span class="swiss-kicker">Navigation</span>
+            <h3 class="drawer-title font-mono">Table of Contents</h3>
+          </div>
+          <button id="mobile-toc-drawer-close" class="drawer-close-btn" type="button" aria-label="Close Table of Contents">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <nav class="mobile-drawer-nav" aria-label="Mobile Navigation Outline">
+          <ul class="toc-list">
+            {filteredHeadings.map((heading) => (
+              <li class={`toc-item depth-${heading.depth}`}>
+                <a href={`#${heading.slug}`} class="toc-link drawer-toc-link">
+                  <span class="link-bullet" aria-hidden="true">&bull;</span>
+                  <span>{heading.text}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </dialog>
 
     <!-- Desktop Sticky Sidebar Table of Contents -->
     <nav class="toc-nav desktop-toc" aria-label="Table of Contents">
@@ -90,6 +143,176 @@ const filteredHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
     margin-top: var(--space-3);
     padding-top: var(--space-3);
     border-top: 1px solid var(--color-border-subtle);
+  }
+
+  /* Floating Mobile Trigger Pill */
+  .mobile-toc-floating-wrap {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 80;
+    display: block;
+    opacity: 0;
+    transform: translateY(12px) scale(0.95);
+    pointer-events: none;
+    transition: opacity var(--transition-smooth), transform var(--transition-smooth);
+  }
+
+  .mobile-toc-floating-wrap.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  @media (min-width: 1024px) {
+    .mobile-toc-floating-wrap {
+      display: none !important;
+    }
+  }
+
+  .mobile-toc-floating-btn {
+    cursor: pointer;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-float);
+    color: var(--color-text);
+    padding: 8px 14px;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    gap: 8px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .mobile-toc-floating-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .toc-progress-badge {
+    background-color: var(--color-accent-subtle);
+    color: var(--color-accent);
+    padding: 2px 6px;
+    border-radius: var(--radius-xs);
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+
+  /* Mobile Bottom Sheet Drawer Modal */
+  .mobile-toc-drawer {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    overflow: hidden;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .mobile-toc-drawer[open] {
+    display: flex;
+  }
+
+  .mobile-toc-drawer-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(10, 12, 16, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1;
+  }
+
+  .mobile-toc-drawer-sheet {
+    position: relative;
+    z-index: 2;
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
+    max-height: 75vh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-5);
+    transform: translateY(100%);
+    animation: slideUpSheet 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes slideUpSheet {
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .mobile-toc-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-border-subtle);
+    margin-bottom: var(--space-3);
+  }
+
+  .header-title-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .header-title-wrap .swiss-kicker {
+    margin-bottom: 0;
+  }
+
+  .drawer-title {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .drawer-close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-surface-sunken);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    cursor: pointer;
+  }
+
+  .drawer-close-btn:hover {
+    color: var(--color-text);
+  }
+
+  .mobile-drawer-nav {
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .drawer-toc-link {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 6px 0;
+  }
+
+  .link-bullet {
+    color: var(--color-text-subtle);
+    font-size: 0.875rem;
+    line-height: 1.2;
+  }
+
+  .drawer-toc-link.active .link-bullet {
+    color: var(--color-accent);
   }
 
   /* Desktop Sticky Sidebar TOC */
@@ -154,6 +377,7 @@ const filteredHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
 
     if (headings.length === 0 || links.length === 0) return;
 
+    // 1. Intersection Observer for active heading highlight
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -174,6 +398,59 @@ const filteredHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
     );
 
     headings.forEach((h) => observer.observe(h));
+
+    // 2. Mobile Floating TOC Button & Progress Tracking
+    const floatingWrap = document.getElementById('mobile-toc-floating-wrap');
+    const progressVal = document.getElementById('mobile-toc-progress-val');
+    const floatingBtn = document.getElementById('mobile-toc-floating-btn');
+    const drawer = document.getElementById('mobile-toc-drawer') as HTMLDialogElement | null;
+    const drawerBackdrop = document.getElementById('mobile-toc-drawer-backdrop');
+    const drawerCloseBtn = document.getElementById('mobile-toc-drawer-close');
+
+    function updateProgress() {
+      const scrollY = window.scrollY;
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = totalHeight > 0 ? Math.min(100, Math.max(0, Math.round((scrollY / totalHeight) * 100))) : 0;
+
+      if (progressVal) {
+        progressVal.textContent = `${pct}%`;
+      }
+
+      if (floatingWrap) {
+        if (scrollY > 400 && scrollY < totalHeight - 200) {
+          floatingWrap.classList.add('is-visible');
+        } else {
+          floatingWrap.classList.remove('is-visible');
+        }
+      }
+    }
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    function openDrawer() {
+      if (!drawer) return;
+      drawer.showModal();
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      if (!drawer) return;
+      drawer.close();
+      document.body.style.overflow = '';
+    }
+
+    floatingBtn?.addEventListener('click', openDrawer);
+    drawerBackdrop?.addEventListener('click', closeDrawer);
+    drawerCloseBtn?.addEventListener('click', closeDrawer);
+
+    // Close drawer when clicking any link inside it
+    const drawerLinks = drawer?.querySelectorAll('.drawer-toc-link');
+    drawerLinks?.forEach((link) => {
+      link.addEventListener('click', () => {
+        closeDrawer();
+      });
+    });
   }
 
   initTocTracker();

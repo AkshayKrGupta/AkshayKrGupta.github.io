@@ -1,11 +1,13 @@
 ---
 import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
 import BaseLayout from './BaseLayout.astro';
 import PostHeader from '../components/blog/PostHeader.astro';
 import PostFooter from '../components/blog/PostFooter.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
 import RelatedPosts from '../components/blog/RelatedPosts.astro';
 import ArchitectureBackground from '../components/blog/ArchitectureBackground.astro';
+import ImageLightbox from '../components/blog/ImageLightbox.astro';
 import { getReadingTime, getWordCount } from '../utils/readingTime';
 import type { BlogPost } from '../utils/blog';
 
@@ -56,7 +58,25 @@ const {
 
 const readingTime = getReadingTime(rawContent);
 const wordCount = getWordCount(rawContent);
-const socialImage = typeof heroImage === 'object' && heroImage !== null ? (heroImage as ImageMetadata).src : (heroImage || '/og-articles-image.png');
+
+// Generate lightweight, optimized social preview card (<350KB) to prevent social crawler timeouts
+let socialImage = '/og-articles-image.png';
+if (typeof heroImage === 'object' && heroImage !== null && 'src' in heroImage) {
+  try {
+    const ogOptimized = await getImage({
+      src: heroImage as ImageMetadata,
+      width: 1200,
+      height: 630,
+      format: 'png',
+      quality: 85,
+    });
+    socialImage = ogOptimized.src;
+  } catch (err) {
+    socialImage = (heroImage as ImageMetadata).src;
+  }
+} else if (typeof heroImage === 'string') {
+  socialImage = heroImage;
+}
 ---
 
 <BaseLayout
@@ -110,6 +130,9 @@ const socialImage = typeof heroImage === 'object' && heroImage !== null ? (heroI
       </aside>
     </div>
   </div>
+
+  <!-- Interactive Architecture Diagram & Image Zoom Lightbox -->
+  <ImageLightbox />
 </BaseLayout>
 
 <style>
@@ -229,6 +252,7 @@ const socialImage = typeof heroImage === 'object' && heroImage !== null ? (heroI
 
   .prose-content :global(p) {
     margin-bottom: var(--space-4);
+    max-width: 680px;
   }
 
   .prose-content :global(ul),
@@ -238,6 +262,7 @@ const socialImage = typeof heroImage === 'object' && heroImage !== null ? (heroI
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
+    max-width: 680px;
   }
 
   .prose-content :global(li) {

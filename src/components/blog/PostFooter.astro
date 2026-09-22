@@ -41,18 +41,41 @@ const currentYear = new Date().getFullYear();
     )}
 
     <div class="post-actions font-mono">
+      <button class="neu-pill action-pill native-share-btn" type="button" aria-label="Share article" title="Share via apps">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+        <span class="share-text">Share</span>
+      </button>
       <button class="neu-pill action-pill copy-article-btn" type="button" aria-label="Copy article link" title="Copy link to article">
         <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
           <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
         </svg>
-        <span class="copy-text">Copy Link</span>
+        <span class="copy-text">Copy</span>
       </button>
+      <a
+        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(Astro.url.pathname)}&url=${encodeURIComponent(Astro.url.href)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="neu-pill action-pill x-share-link"
+        aria-label="Share on X (Twitter)"
+        title="Share on X"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+        <span>X</span>
+      </a>
       <a
         href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(Astro.url.href)}`}
         target="_blank"
         rel="noopener noreferrer"
-        class="neu-pill action-pill"
+        class="neu-pill action-pill linkedin-share-link"
         aria-label="Share on LinkedIn"
         title="Share on LinkedIn"
       >
@@ -61,7 +84,7 @@ const currentYear = new Date().getFullYear();
           <rect width="4" height="12" x="2" y="9"></rect>
           <circle cx="4" cy="4" r="2"></circle>
         </svg>
-        <span>Share</span>
+        <span>LinkedIn</span>
       </a>
     </div>
   </div>
@@ -359,6 +382,14 @@ const currentYear = new Date().getFullYear();
     display: none;
   }
 
+  .native-share-btn {
+    display: none;
+  }
+
+  .has-native-share .native-share-btn {
+    display: inline-flex;
+  }
+
   @media (min-width: 640px) {
     .nav-placeholder {
       display: block;
@@ -367,8 +398,30 @@ const currentYear = new Date().getFullYear();
 </style>
 
 <script is:inline>
-  function initFooterCopyBtn() {
-    document.querySelectorAll('.copy-article-btn').forEach((btn) => {
+  function initFooterShareActions() {
+    if (navigator.share) {
+      document.querySelectorAll('.post-actions').forEach((wrap) => {
+        wrap.classList.add('has-native-share');
+      });
+
+      document.querySelectorAll('.post-article-footer .native-share-btn').forEach((btn) => {
+        if (btn.dataset.initialized) return;
+        btn.dataset.initialized = 'true';
+        btn.addEventListener('click', async () => {
+          try {
+            await navigator.share({
+              title: document.title,
+              text: document.querySelector('meta[name="description"]')?.getAttribute('content') || document.title,
+              url: window.location.href,
+            });
+          } catch (err) {
+            // User cancelled
+          }
+        });
+      });
+    }
+
+    document.querySelectorAll('.post-article-footer .copy-article-btn').forEach((btn) => {
       if (btn.dataset.initialized) return;
       btn.dataset.initialized = 'true';
       btn.addEventListener('click', async () => {
@@ -388,6 +441,8 @@ const currentYear = new Date().getFullYear();
       });
     });
   }
-  initFooterCopyBtn();
-  document.addEventListener('astro:after-swap', initFooterCopyBtn);
+
+  initFooterShareActions();
+  document.addEventListener('astro:page-load', initFooterShareActions);
+  document.addEventListener('astro:after-swap', initFooterShareActions);
 </script>
