@@ -265,14 +265,33 @@ const { code } = Astro.props;
   /* Viewport and Scalable Canvas */
   .mermaid-viewport {
     width: 100%;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     padding: var(--space-7) var(--space-4) var(--space-5);
     display: flex;
-    justify-content: center;
+    justify-content: safe center;
     min-height: 180px;
     cursor: grab;
     user-select: none;
+    touch-action: pan-x pan-y;
+  }
+
+  .mermaid-viewport::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .mermaid-viewport::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .mermaid-viewport::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+  }
+
+  .mermaid-viewport::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent);
   }
 
   .mermaid-wrapper.is-fullscreen .mermaid-viewport {
@@ -283,7 +302,8 @@ const { code } = Astro.props;
   }
 
   .mermaid-canvas {
-    width: 100%;
+    width: max-content;
+    min-width: 100%;
     transform-origin: center center;
     transition: transform 0.15s ease-out;
     display: flex;
@@ -301,16 +321,26 @@ const { code } = Astro.props;
   }
 
   .mermaid-diagram :global(svg) {
-    width: auto !important;
-    max-width: 75% !important;
+    max-width: 100% !important;
     max-height: 520px;
     height: auto !important;
     margin: 0 auto;
+    display: block;
   }
 
   @media (max-width: 768px) {
     .mermaid-diagram :global(svg) {
-      max-width: 95% !important;
+      min-width: 320px;
+      max-width: none !important;
+      height: auto !important;
+    }
+
+    .mermaid-wrapper.is-wide-diagram .mermaid-viewport {
+      justify-content: flex-start;
+    }
+
+    .mermaid-wrapper.is-wide-diagram .mermaid-diagram :global(svg) {
+      min-width: 580px !important;
     }
   }
 
@@ -325,9 +355,9 @@ const { code } = Astro.props;
     const wrappers = document.querySelectorAll('.mermaid-wrapper');
     if (wrappers.length === 0) return;
 
-    // 1. Render Mermaid SVGs
+    // 1. Render Mermaid SVGs using local bundled dependency
     try {
-      const mermaid = (await import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')).default;
+      const mermaid = (await import('mermaid')).default;
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
       mermaid.initialize({
@@ -361,8 +391,18 @@ const { code } = Astro.props;
           diagram.innerHTML = svg;
           const renderedSvg = diagram.querySelector('svg');
           if (renderedSvg) {
-            renderedSvg.style.maxWidth = '75%';
+            renderedSvg.removeAttribute('height');
             renderedSvg.style.height = 'auto';
+
+            const viewBox = renderedSvg.getAttribute('viewBox');
+            if (viewBox) {
+              const parts = viewBox.split(' ').map(Number);
+              const vbWidth = parts[2];
+              const vbHeight = parts[3];
+              if (vbWidth && vbHeight && vbWidth / vbHeight > 2.0) {
+                wrapper.classList.add('is-wide-diagram');
+              }
+            }
           }
           diagram.setAttribute('data-processed', 'true');
         } catch (diagError) {
