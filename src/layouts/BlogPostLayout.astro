@@ -38,6 +38,8 @@ interface Props {
   relatedPosts?: BlogPost[];
   rawContent?: string;
   faqs?: FAQItem[];
+  slug?: string;
+  ogImage?: string;
 }
 
 const {
@@ -55,28 +57,20 @@ const {
   relatedPosts = [],
   rawContent = '',
   faqs = [],
+  slug,
+  ogImage: customOgImage,
 } = Astro.props;
 
 const readingTime = getReadingTime(rawContent);
 const wordCount = getWordCount(rawContent);
 
-// Generate lightweight, optimized social preview card (<350KB) to prevent social crawler timeouts
-let socialImage = '/og-articles-image.png';
-if (typeof heroImage === 'object' && heroImage !== null && 'src' in heroImage) {
-  try {
-    const ogOptimized = await getImage({
-      src: heroImage as ImageMetadata,
-      width: 1200,
-      height: 630,
-      format: 'png',
-      quality: 85,
-    });
-    socialImage = ogOptimized.src;
-  } catch (err) {
-    socialImage = (heroImage as ImageMetadata).src;
-  }
-} else if (typeof heroImage === 'string') {
-  socialImage = heroImage;
+// Automated Dynamic OG Image: defaults to dedicated 1200x630 card generated at build-time
+const postSlug = slug || Astro.params.slug;
+let socialImage = postSlug ? `/blog/${postSlug}/og.png` : '/og-articles-image.png';
+
+// Respect custom override if explicitly passed
+if (customOgImage) {
+  socialImage = customOgImage;
 }
 ---
 
