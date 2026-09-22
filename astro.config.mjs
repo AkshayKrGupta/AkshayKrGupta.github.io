@@ -11,7 +11,10 @@ export default defineConfig({
     mdx({
       syntaxHighlight: 'shiki',
       shikiConfig: {
-        theme: 'github-dark-dimmed',
+        themes: {
+          light: 'github-light',
+          dark: 'github-dark-dimmed',
+        },
         wrap: false,
       },
       gfm: true,
@@ -19,7 +22,10 @@ export default defineConfig({
   ],
   markdown: {
     shikiConfig: {
-      theme: 'github-dark-dimmed',
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark-dimmed',
+      },
       wrap: false,
     },
   },

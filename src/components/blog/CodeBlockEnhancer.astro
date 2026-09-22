@@ -1,0 +1,422 @@
+---
+/**
+ * CodeBlockEnhancer.astro
+ * Enhances all markdown and MDX code blocks with:
+ * - macOS window chrome dots (red, yellow, green)
+ * - Language badge
+ * - Word wrap toggle (essential for mobile readability)
+ * - Tactile copy code button with status animation
+ * - Mobile horizontal scroll indicators (fade masks)
+ * - Dual-theme support matching Astro's Shiki output
+ */
+---
+
+<style is:global>
+  /* ==========================================================================
+     Elevated Code Block Container & Toolbar
+     ========================================================================== */
+
+  .code-block-container {
+    position: relative;
+    margin: var(--space-7) 0;
+    border-radius: var(--radius-md);
+    background-color: #f6f8fa;
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-raised);
+    overflow: hidden;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-smooth);
+  }
+
+  [data-theme='dark'] .code-block-container {
+    background-color: #161b22;
+    border-color: #30363d;
+  }
+
+  /* Code Block Toolbar Header */
+  .code-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 14px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid var(--color-border-subtle);
+    user-select: none;
+    min-height: 38px;
+  }
+
+  [data-theme='dark'] .code-toolbar {
+    background-color: rgba(255, 255, 255, 0.03);
+    border-bottom-color: rgba(255, 255, 255, 0.07);
+  }
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* macOS Traffic Light Dots */
+  .window-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .window-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 0.85;
+    transition: opacity var(--transition-fast);
+  }
+
+  .dot-red {
+    background-color: #ff5f56;
+    border: 1px solid #e0443e;
+  }
+
+  .dot-yellow {
+    background-color: #ffbd2e;
+    border: 1px solid #dea123;
+  }
+
+  .dot-green {
+    background-color: #27c93f;
+    border: 1px solid #1aab29;
+  }
+
+  .code-block-container:hover .window-dot {
+    opacity: 1;
+  }
+
+  /* Language Badge */
+  .code-lang-badge {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  [data-theme='dark'] .code-lang-badge {
+    color: #8b949e;
+  }
+
+  /* Toolbar Actions */
+  .toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .code-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    border-radius: var(--radius-xs);
+    background-color: transparent;
+    border: 1px solid transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    line-height: 1.4;
+  }
+
+  [data-theme='dark'] .code-tool-btn {
+    color: #8b949e;
+  }
+
+  .code-tool-btn:hover {
+    background-color: var(--color-surface);
+    color: var(--color-accent);
+    border-color: var(--color-border);
+  }
+
+  [data-theme='dark'] .code-tool-btn:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #e6edf3;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .code-tool-btn.active {
+    background-color: var(--color-accent-subtle);
+    color: var(--color-accent);
+    border-color: rgba(30, 75, 216, 0.2);
+  }
+
+  [data-theme='dark'] .code-tool-btn.active {
+    background-color: rgba(88, 166, 255, 0.15);
+    color: #58a6ff;
+    border-color: rgba(88, 166, 255, 0.3);
+  }
+
+  /* Pre Element Inside Container */
+  .code-block-container pre {
+    margin: 0 !important;
+    padding: 16px 18px !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.65;
+    overflow-x: auto;
+    position: relative;
+    z-index: 1;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .code-block-container pre code {
+    font-family: inherit;
+    font-size: inherit;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    display: block;
+  }
+
+  /* Word Wrap Mode */
+  .code-block-container.is-wrapped pre {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-x: hidden !important;
+  }
+
+  .code-block-container.is-wrapped pre code {
+    white-space: pre-wrap !important;
+  }
+
+  /* ==========================================================================
+     Shiki Dual Theme Highlighting Rules
+     ========================================================================== */
+
+  /* Light Theme Syntax (Default) */
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-light) !important;
+    background-color: transparent !important;
+    font-style: var(--shiki-light-font-style) !important;
+    font-weight: var(--shiki-light-font-weight) !important;
+    text-decoration: var(--shiki-light-text-decoration) !important;
+  }
+
+  /* Dark Theme Syntax */
+  [data-theme='dark'] .astro-code,
+  [data-theme='dark'] .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: transparent !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+
+  /* ==========================================================================
+     Horizontal Scroll Overflow Fade Masks
+     ========================================================================== */
+
+  .code-scroll-track {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .code-scroll-mask-left,
+  .code-scroll-mask-right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+  }
+
+  .code-scroll-mask-left {
+    left: 0;
+    background: linear-gradient(to right, rgba(246, 248, 250, 0.95), transparent);
+  }
+
+  .code-scroll-mask-right {
+    right: 0;
+    background: linear-gradient(to left, rgba(246, 248, 250, 0.95), transparent);
+  }
+
+  [data-theme='dark'] .code-scroll-mask-left {
+    background: linear-gradient(to right, rgba(22, 27, 34, 0.95), transparent);
+  }
+
+  [data-theme='dark'] .code-scroll-mask-right {
+    background: linear-gradient(to left, rgba(22, 27, 34, 0.95), transparent);
+  }
+
+  .code-scroll-track.has-scroll-left .code-scroll-mask-left {
+    opacity: 1;
+  }
+
+  .code-scroll-track.has-scroll-right .code-scroll-mask-right {
+    opacity: 1;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    function enhanceCodeBlocks() {
+      const preElements = document.querySelectorAll('.prose-content pre');
+
+      preElements.forEach((pre) => {
+        // Prevent duplicate processing
+        if (pre.closest('.code-block-container')) return;
+
+        // Detect language from class or child code class
+        const langMatch =
+          pre.className.match(/language-([a-zA-Z0-9_-]+)/) ||
+          pre.querySelector('code')?.className.match(/language-([a-zA-Z0-9_-]+)/);
+        const language = langMatch ? langMatch[1].toUpperCase() : 'CODE';
+
+        // 1. Create Container
+        const container = document.createElement('div');
+        container.className = 'code-block-container';
+
+        // 2. Create Toolbar Header
+        const toolbar = document.createElement('div');
+        toolbar.className = 'code-toolbar font-mono';
+        toolbar.innerHTML = `
+          <div class="toolbar-left">
+            <span class="window-dots" aria-hidden="true">
+              <span class="window-dot dot-red"></span>
+              <span class="window-dot dot-yellow"></span>
+              <span class="window-dot dot-green"></span>
+            </span>
+            <span class="code-lang-badge">${language}</span>
+          </div>
+          <div class="toolbar-actions">
+            <button class="code-tool-btn wrap-toggle-btn" type="button" aria-label="Toggle line wrapping" title="Toggle word wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="12" x2="15" y2="12"></line>
+                <polyline points="14 16 18 12 14 8"></polyline>
+                <path d="M17 18h2a2 2 0 0 0 2-2v-4"></path>
+                <line x1="3" y1="18" x2="11" y2="18"></line>
+              </svg>
+              <span class="wrap-label">Wrap</span>
+            </button>
+            <button class="code-tool-btn copy-code-btn" type="button" aria-label="Copy code snippet" title="Copy code">
+              <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+              </svg>
+              <span class="copy-status">Copy</span>
+            </button>
+          </div>
+        `;
+
+        // 3. Create Scroll Track Wrapper with Left & Right Gradient Fade Masks
+        const track = document.createElement('div');
+        track.className = 'code-scroll-track';
+
+        const maskLeft = document.createElement('div');
+        maskLeft.className = 'code-scroll-mask-left';
+        maskLeft.setAttribute('aria-hidden', 'true');
+
+        const maskRight = document.createElement('div');
+        maskRight.className = 'code-scroll-mask-right';
+        maskRight.setAttribute('aria-hidden', 'true');
+
+        // Wrap pre element inside container
+        pre.parentNode.insertBefore(container, pre);
+        container.appendChild(toolbar);
+        container.appendChild(track);
+        track.appendChild(maskLeft);
+        track.appendChild(pre);
+        track.appendChild(maskRight);
+
+        // 4. Word Wrap Toggle Event
+        const wrapBtn = toolbar.querySelector('.wrap-toggle-btn');
+        const wrapLabel = wrapBtn.querySelector('.wrap-label');
+        wrapBtn.addEventListener('click', () => {
+          const isWrapped = container.classList.toggle('is-wrapped');
+          wrapBtn.classList.toggle('active', isWrapped);
+          wrapLabel.textContent = isWrapped ? 'Unwrap' : 'Wrap';
+          checkScrollOverflow();
+        });
+
+        // 5. Copy Code Event
+        const copyBtn = toolbar.querySelector('.copy-code-btn');
+        const copyStatus = copyBtn.querySelector('.copy-status');
+        const copyIcon = copyBtn.querySelector('.copy-icon');
+
+        copyBtn.addEventListener('click', async () => {
+          const codeEl = pre.querySelector('code');
+          const codeText = codeEl ? codeEl.innerText : pre.innerText;
+
+          try {
+            await navigator.clipboard.writeText(codeText);
+            copyStatus.textContent = 'Copied!';
+            copyBtn.classList.add('active');
+            copyBtn.innerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span class="copy-status" style="color: #22c55e;">Copied!</span>
+            `;
+
+            setTimeout(() => {
+              copyBtn.classList.remove('active');
+              copyBtn.innerHTML = `
+                <svg class="copy-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                </svg>
+                <span class="copy-status">Copy</span>
+              `;
+            }, 2000);
+          } catch (err) {
+            console.error('Failed to copy code: ', err);
+          }
+        });
+
+        // 6. Horizontal Scroll Overflow Detection
+        function checkScrollOverflow() {
+          if (container.classList.contains('is-wrapped')) {
+            track.classList.remove('has-scroll-left', 'has-scroll-right');
+            return;
+          }
+
+          const scrollLeft = pre.scrollLeft;
+          const maxScroll = pre.scrollWidth - pre.clientWidth;
+
+          if (scrollLeft > 4) {
+            track.classList.add('has-scroll-left');
+          } else {
+            track.classList.remove('has-scroll-left');
+          }
+
+          if (maxScroll > 4 && scrollLeft < maxScroll - 4) {
+            track.classList.add('has-scroll-right');
+          } else {
+            track.classList.remove('has-scroll-right');
+          }
+        }
+
+        pre.addEventListener('scroll', checkScrollOverflow, { passive: true });
+        window.addEventListener('resize', checkScrollOverflow, { passive: true });
+        // Initial check after render
+        setTimeout(checkScrollOverflow, 100);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', enhanceCodeBlocks);
+    } else {
+      enhanceCodeBlocks();
+    }
+
+    document.addEventListener('astro:page-load', enhanceCodeBlocks);
+    document.addEventListener('astro:after-swap', enhanceCodeBlocks);
+  })();
+</script>

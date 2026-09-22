@@ -8,6 +8,7 @@ import TableOfContents from '../components/blog/TableOfContents.astro';
 import RelatedPosts from '../components/blog/RelatedPosts.astro';
 import ArchitectureBackground from '../components/blog/ArchitectureBackground.astro';
 import ImageLightbox from '../components/blog/ImageLightbox.astro';
+import CodeBlockEnhancer from '../components/blog/CodeBlockEnhancer.astro';
 import { getReadingTime, getWordCount } from '../utils/readingTime';
 import type { BlogPost } from '../utils/blog';
 
@@ -133,6 +134,9 @@ if (typeof heroImage === 'object' && heroImage !== null && 'src' in heroImage) {
 
   <!-- Interactive Architecture Diagram & Image Zoom Lightbox -->
   <ImageLightbox />
+
+  <!-- Developer-Grade Code Block Terminal Chrome & Dual Theme Enhancer -->
+  <CodeBlockEnhancer />
 </BaseLayout>
 
 <style>
@@ -310,43 +314,6 @@ if (typeof heroImage === 'object' && heroImage !== null && 'src' in heroImage) {
     color: var(--color-accent);
   }
 
-  /* Code Blocks */
-  .prose-content :global(pre) {
-    position: relative;
-    margin: var(--space-6) 0;
-    padding: var(--space-6) var(--space-5) var(--space-5);
-    border-radius: var(--radius-md);
-    background-color: #161b22 !important;
-    border: 1px solid var(--color-border);
-    box-shadow: var(--shadow-raised);
-    overflow-x: auto;
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    line-height: 1.6;
-  }
-
-  .prose-content :global(pre .code-lang-tag) {
-    position: absolute;
-    top: 8px;
-    left: 12px;
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #8b949e;
-    user-select: none;
-  }
-
-  .prose-content :global(pre code) {
-    font-family: inherit;
-    font-size: inherit;
-    color: inherit;
-    background: transparent;
-    border: none;
-    padding: 0;
-  }
-
   /* Tables */
   .prose-content :global(table) {
     width: 100%;
@@ -424,75 +391,9 @@ if (typeof heroImage === 'object' && heroImage !== null && 'src' in heroImage) {
     });
   }
 
-  // 3. Code Block Copy & Language Tags
-  function initCodeEnhancements() {
-    const preBlocks = document.querySelectorAll('.prose-content pre');
-    
-    preBlocks.forEach((pre) => {
-      // Language Tag
-      if (!pre.querySelector('.code-lang-tag')) {
-        const langMatch = pre.className.match(/language-([a-zA-Z0-9_-]+)/) || pre.querySelector('code')?.className.match(/language-([a-zA-Z0-9_-]+)/);
-        const lang = langMatch ? langMatch[1] : 'CODE';
-        const langTag = document.createElement('span');
-        langTag.className = 'code-lang-tag';
-        langTag.textContent = lang.toUpperCase();
-        pre.appendChild(langTag);
-      }
-
-      // Copy Button
-      if (pre.querySelector('.copy-code-btn')) return;
-
-      const button = document.createElement('button');
-      button.className = 'copy-code-btn neu-control';
-      button.setAttribute('type', 'button');
-      button.setAttribute('aria-label', 'Copy code to clipboard');
-      button.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
-          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
-        </svg>
-      `;
-
-      button.style.position = 'absolute';
-      button.style.top = '6px';
-      button.style.right = '8px';
-      button.style.width = '28px';
-      button.style.height = '28px';
-      button.style.padding = '0';
-      button.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-      button.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-      button.style.color = '#e6edf3';
-
-      button.addEventListener('click', async () => {
-        const code = pre.querySelector('code')?.innerText || pre.innerText;
-        try {
-          await navigator.clipboard.writeText(code);
-          button.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34c759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-          `;
-          setTimeout(() => {
-            button.innerHTML = `
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
-                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
-              </svg>
-            `;
-          }, 2000);
-        } catch (err) {
-          console.warn('Failed to copy code: ', err);
-        }
-      });
-
-      pre.appendChild(button);
-    });
-  }
-
   function initAll() {
     initProgressBar();
     initHeadingAnchors();
-    initCodeEnhancements();
   }
 
   initAll();
