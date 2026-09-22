@@ -33,7 +33,7 @@ import { nowData } from '../data/now';
           <h2 class="now-section-title font-mono">{section.title}</h2>
           <ul class="now-list">
             {section.items.map((item) => (
-              <li class="now-list-item text-muted">{item}</li>
+              <li class="now-list-item text-muted" set:html={item} />
             ))}
           </ul>
         </BentoCard>
@@ -113,5 +113,16 @@ import { nowData } from '../data/now';
   .now-list-item {
     font-size: var(--text-sm);
     line-height: var(--leading-relaxed);
+  }
+
+  .now-list-item :global(a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--transition-fast, 0.15s ease);
+  }
+
+  .now-list-item :global(a:hover) {
+    color: var(--color-accent-hover);
   }
 </style>

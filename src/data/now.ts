@@ -23,16 +23,16 @@ export const nowData = {
     {
       title: 'Current Projects & Active Development',
       items: [
-        'Karvics (karvics.com) — Expanding the zero-knowledge, client-side developer and cryptography suite with new offline-first browser utilities (AES-256-GCM, Web Crypto, PDF manipulation).',
-        'TwinPixCleaner (macOS) — Maintaining and enhancing the open-source photo deduplication utility using native Apple Vision Framework visual similarity and SHA-256 hashing.',
-        'NanoPress (macOS) — Optimizing the multi-threaded local batch compression engine using native Swift concurrency (async/await, Actors) and PDFKit.'
+        '<a href="https://karvics.com" target="_blank" rel="noopener noreferrer">Karvics</a> (<a href="https://karvics.com" target="_blank" rel="noopener noreferrer">karvics.com</a>) — Expanding the zero-knowledge, client-side developer and cryptography suite with new offline-first browser utilities (AES-256-GCM, Web Crypto, PDF manipulation).',
+        '<a href="https://github.com/AkshayKrGupta/TwinPixCleaner" target="_blank" rel="noopener noreferrer">TwinPixCleaner</a> (macOS · <a href="https://github.com/AkshayKrGupta/TwinPixCleaner" target="_blank" rel="noopener noreferrer">GitHub</a>) — Maintaining and enhancing the open-source photo deduplication utility using native Apple Vision Framework visual similarity and SHA-256 hashing.',
+        '<a href="https://github.com/AkshayKrGupta/NanoPress" target="_blank" rel="noopener noreferrer">NanoPress</a> (macOS · <a href="https://github.com/AkshayKrGupta/NanoPress" target="_blank" rel="noopener noreferrer">GitHub</a>) — Optimizing the multi-threaded local batch compression engine using native Swift concurrency (async/await, Actors) and PDFKit.'
       ]
     },
     {
       title: 'Technical Writing & Articles',
       items: [
         'Authoring deep dives on enterprise system architecture, distributed consensus, and "the parts nobody puts in the architecture diagram".',
-        'Sharing architectural blueprints and lessons learned from building large-scale systems in Global FinTech at /blog/.',
+        'Sharing architectural blueprints and lessons learned from building large-scale systems in Global FinTech at <a href="/blog/">/blog/</a>.',
         'Writing on AI integration patterns and developer tooling scalability.'
       ]
     },
