@@ -13,35 +13,31 @@ export async function GET(context: any) {
 
 > ${site.tagline}
 
-## About the Author
-${site.name} (${site.shortName}) is a ${site.title} specializing in enterprise-scale systems, distributed computing, Model Context Protocol (MCP), and AI adoption in regulated industries.
+## Author & Identity
+${site.name} (${site.shortName}) is a ${site.jobTitle} specializing in enterprise-scale systems, distributed computing, Model Context Protocol (MCP), and AI adoption in regulated industries.
 
-- Homepage: ${siteUrl}${routes.home}
+- Role: ${site.jobTitle}
+- Canonical Website: ${siteUrl}${routes.home}
 - Architecture Notes: ${siteUrl}${routes.blog}
 - Current Focus (/now): ${siteUrl}${routes.now}
 - GitHub: ${site.social.github}
 - LinkedIn: ${site.social.linkedin}
 - RSS Feed: ${siteUrl}${routes.rss}
-- Full Text Corpus: ${siteUrl}${routes.llmsFull}
+- Complete Corpus: ${siteUrl}${routes.llmsFull}
 
 ## Published Architecture Notes
 ${articlesList}
 
-## Active Projects & Software
+## Core Expertise & Entity Knowledge
+${site.expertise.map((item) => `- ${item.name}${item.sameAs ? ` (${item.sameAs})` : ''}`).join('\n')}
+
+## Active Projects & Software Systems
 - [Karvics](https://karvics.com): Zero-Knowledge client-side privacy & developer utility suite (Web Crypto, AES-256-GCM, PWA).
 - [TwinPixCleaner](https://github.com/AkshayKrGupta/TwinPixCleaner): Open-source native macOS photo deduplication utility using Apple Vision AI and SHA-256 matching.
 - [NanoPress](https://github.com/AkshayKrGupta/NanoPress): Open-source native macOS multi-threaded batch media and PDF compression utility using Swift Concurrency.
 
-## Core Expertise & Topics Covered
-- Enterprise Architecture & Governance
-- GenAI Integration & AI Governance in Regulated Industries
-- Model Context Protocol (MCP) Server Design & Schema Patterns
-- Distributed Systems & Consensus Algorithms (Raft, Paxos)
-- High-Throughput Microservices & Event-Driven Architecture
-- Cloud Infrastructure & Kubernetes Automation
-
-## Full Corpus
-- [Full Technical Corpus](${siteUrl}${routes.llmsFull}): Comprehensive markdown file containing the complete text of all published architecture notes in a single corpus for deep-context LLM analysis.
+## Full Technical Corpus
+- [Full Text Markdown Corpus](${siteUrl}${routes.llmsFull}): Complete text of all published architecture notes in a single, clean markdown corpus for deep retrieval-augmented generation (RAG) and LLM analysis.
 `;
 
   return new Response(content, {

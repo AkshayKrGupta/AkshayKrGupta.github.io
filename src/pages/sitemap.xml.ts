@@ -1,9 +1,10 @@
 import { site } from '../data/site';
-import { getPublishedPosts, routes } from '../utils/blog';
+import { getPublishedPosts, getAllUniqueTags, routes } from '../utils/blog';
 
 export async function GET(context: any) {
   const siteUrl = context.site ? context.site.href.replace(/\/$/, '') : site.url;
   const posts = await getPublishedPosts();
+  const tags = await getAllUniqueTags();
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -23,13 +24,20 @@ export async function GET(context: any) {
     };
   });
 
+  const tagPages = tags.map((tag) => ({
+    loc: `${siteUrl}${routes.tag(tag)}`,
+    lastmod: today,
+    changefreq: 'weekly',
+    priority: '0.7',
+  }));
+
   const discoveryPages = [
     { loc: `${siteUrl}/llms.txt`, lastmod: today, changefreq: 'weekly', priority: '0.7' },
     { loc: `${siteUrl}/llms-full.txt`, lastmod: today, changefreq: 'weekly', priority: '0.7' },
     { loc: `${siteUrl}/rss.xml`, lastmod: today, changefreq: 'daily', priority: '0.8' },
   ];
 
-  const allUrls = [...staticPages, ...postPages, ...discoveryPages];
+  const allUrls = [...staticPages, ...postPages, ...tagPages, ...discoveryPages];
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
