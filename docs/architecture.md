@@ -4,7 +4,7 @@
 > **Author**: Akshay K Gupta  
 > **Role**: Solutions Architect  
 > **Live URL**: [https://akshaykgupta.me](https://akshaykgupta.me/)  
-> **Primary Technology Stack**: Astro 5 (Static Engine), TypeScript, MDX, Vanilla CSS Design Tokens, GitHub Pages CI/CD
+> **Primary Technology Stack**: Astro 7 (Static Engine, Vite 8, Rolldown), TypeScript, MDX, Vanilla CSS Design Tokens, GitHub Pages CI/CD
 
 ---
 
@@ -14,7 +14,7 @@ This website is engineered as a **100% static, high-performance portfolio and te
 
 1. **Zero Client Runtime Bloat**: No frontend UI frameworks (React, Vue, Svelte) are loaded at runtime for static content. Total client JavaScript across the entire site is `< 2.5 kB` (vanilla JS for theme toggling, clipboard copy, and scroll progress).
 2. **Strict Separation of Concerns**:
-   - **Content & Identity Data**: Isolated in typed TypeScript modules (`src/data/`) and MDX content collections (`src/content/blog/`).
+   - **Content & Identity Data**: Isolated in typed TypeScript modules (`src/data/`) and MDX Content Layer collections (`src/content/blog/` loaded via `src/content.config.ts`).
    - **Visual Presentation**: Encapsulated in reusable Astro components (`src/components/`) and global CSS design tokens (`src/styles/global.css`).
    - **Business Logic & Queries**: Centralized in utility modules (`src/utils/blog.ts`).
 3. **Swiss Typographic Style × Bento Grid × Subtle Neumorphism**:
@@ -73,8 +73,8 @@ AkshayPortfolio/
 │   │       ├── SEOHead.astro           # OpenGraph, Twitter, canonical, preconnect
 │   │       └── JsonLd.astro            # Schema.org JSON-LD structured data
 │   ├── content/
-│   │   ├── blog/               # Markdown/MDX articles
-│   │   └── config.ts           # Strict Zod schema for blog collections
+│   │   └── blog/               # Markdown/MDX articles
+│   ├── content.config.ts       # Strict Zod schema & Content Layer glob loader
 │   ├── data/                   # Single Source of Truth data models
 │   │   ├── site.ts             # Author name, bio, social channels, blog metadata
 │   │   ├── experience.ts       # Career milestones & achievements

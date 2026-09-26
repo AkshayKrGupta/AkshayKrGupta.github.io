@@ -1,11 +1,11 @@
 # Akshay K Gupta — Portfolio & Technical Articles
 
-[![Built with Astro](https://img.shields.io/badge/Astro-5.0-BC52EE?style=flat&logo=astro&logoColor=white)](https://astro.build)
+[![Built with Astro](https://img.shields.io/badge/Astro-7.3-BC52EE?style=flat&logo=astro&logoColor=white)](https://astro.build)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Deployed on GitHub Pages](https://img.shields.io/badge/Hosted_on-GitHub_Pages-222222?style=flat&logo=github&logoColor=white)](https://akshaykrgupta.github.io/)
 
-A modern, high-performance personal portfolio and technical publishing platform for **Akshay K Gupta** (Solutions Architect). Built with **Astro 5**, **TypeScript**, and **MDX**, designed around a **Bento Grid × Swiss Typography × Subtle Neumorphism** visual aesthetic.
+A modern, high-performance personal portfolio and technical publishing platform for **Akshay K Gupta** (Solutions Architect). Built with **Astro 7**, **TypeScript**, and **MDX**, designed around a **Bento Grid × Swiss Typography × Subtle Neumorphism** visual aesthetic.
 
 🌐 **Live Site**: [https://akshaykrgupta.github.io/](https://akshaykrgupta.github.io/)
 
@@ -26,9 +26,9 @@ A modern, high-performance personal portfolio and technical publishing platform 
 
 | Component | Technology |
 |---|---|
-| **Static Site Generator** | [Astro 5](https://astro.build/) (Static Output) |
+| **Static Site Generator** | [Astro 7](https://astro.build/) (Static Output, Vite 8, Rolldown) |
 | **Language** | [TypeScript](https://www.typescriptlang.org/) |
-| **Content & Publishing** | MDX (`@astrojs/mdx`) with strict Zod Schemas |
+| **Content & Publishing** | MDX (`@astrojs/mdx`) with Astro Content Layer & Zod Schemas |
 | **Styling** | Vanilla CSS Design Tokens (Swiss + Bento + Neumorphism) |
 | **Syntax Highlighting** | [Shiki](https://shiki.style/) |
 | **Search & Feeds** | `@astrojs/sitemap`, `@astrojs/rss`, `llms.txt` |
@@ -50,8 +50,8 @@ A modern, high-performance personal portfolio and technical publishing platform 
 │   │   ├── mdx/                # Callout, Figure, Mermaid, YouTube embeds
 │   │   └── seo/                # SEOHead & JSON-LD Structured Data
 │   ├── content/
-│   │   ├── blog/               # Markdown/MDX technical articles
-│   │   └── config.ts           # Zod schema for content collections
+│   │   └── blog/               # Markdown/MDX technical articles
+│   ├── content.config.ts       # Astro Content Layer glob loader & Zod schemas
 │   ├── data/                   # Central data models (site, experience, projects, navigation, now)
 │   ├── layouts/                # BaseLayout & BlogPostLayout
 │   ├── pages/                  # Static routes (/, /blog/, /now/, /rss.xml, /llms.txt)
