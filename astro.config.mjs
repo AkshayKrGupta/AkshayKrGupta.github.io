@@ -30,4 +30,17 @@ export default defineConfig({
     },
   },
   prefetch: true,
+  vite: {
+    build: {
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        onwarn(warning, defaultHandler) {
+          if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+            return;
+          }
+          defaultHandler(warning);
+        },
+      },
+    },
+  },
 });
