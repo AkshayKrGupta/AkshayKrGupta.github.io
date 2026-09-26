@@ -1,6 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
-export type BlogPost = CollectionEntry<'blog'>;
+export type BlogPost = CollectionEntry<'blog'> & { slug: string };
 
 /**
  * Route generator for centralized URL management
@@ -28,9 +28,14 @@ export async function getPublishedPosts(includeDrafts = false): Promise<BlogPost
     return !data.draft;
   });
 
-  return posts.sort(
-    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-  );
+  return posts
+    .map((post) => ({
+      ...post,
+      slug: (post as any).slug || post.id,
+    }))
+    .sort(
+      (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+    );
 }
 
 /**
