@@ -40,6 +40,12 @@ export async function GET(context: any) {
     ? sortedPosts
         .map((post) => {
           const cleanBody = sanitizeMdxForLlm(post.body);
+          const faqSection = post.data.faqs && post.data.faqs.length > 0
+            ? `\n\n## Frequently Asked Questions\n\n` +
+              post.data.faqs
+                .map((f: { question: string; answer: string }) => `### Q: ${f.question}\n${f.answer}`)
+                .join('\n\n')
+            : '';
           return `---
 # ${post.data.title}
 - URL: ${siteUrl}${routes.post(post.slug)}
@@ -48,7 +54,7 @@ export async function GET(context: any) {
 - Tags: ${post.data.tags.join(', ')}
 - Description: ${post.data.description}
 
-${cleanBody}
+${cleanBody}${faqSection}
 `;
         })
         .join('\n\n========================================\n\n')

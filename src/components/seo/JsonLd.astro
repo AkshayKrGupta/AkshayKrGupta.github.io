@@ -205,6 +205,12 @@ if (faqs && faqs.length > 0) {
   articleGraph.push({
     '@type': 'FAQPage',
     '@id': `${url}#faq`,
+    url: url,
+    name: `${title} — Frequently Asked Questions`,
+    isPartOf: {
+      '@id': `${site.url}/#website`,
+    },
+    inLanguage: 'en-US',
     mainEntity: faqs.map((faq) => ({
       '@type': 'Question',
       name: faq.question,

@@ -9,6 +9,7 @@ import RelatedPosts from '../components/blog/RelatedPosts.astro';
 import ArchitectureBackground from '../components/blog/ArchitectureBackground.astro';
 import ImageLightbox from '../components/blog/ImageLightbox.astro';
 import CodeBlockEnhancer from '../components/blog/CodeBlockEnhancer.astro';
+import FAQSection from '../components/blog/FAQSection.astro';
 import { getReadingTime, getWordCount } from '../utils/readingTime';
 import type { BlogPost } from '../utils/blog';
 
@@ -64,6 +65,10 @@ const {
 const readingTime = getReadingTime(rawContent);
 const wordCount = getWordCount(rawContent);
 
+const allHeadings = faqs && faqs.length > 0
+  ? [...headings, { depth: 2, slug: 'key-architectural-notes', text: 'Key Architectural Notes' }]
+  : headings;
+
 // Automated Dynamic OG Image: defaults to dedicated 1200x630 card generated at build-time
 const postSlug = slug || Astro.params.slug;
 let socialImage = postSlug ? `/blog/${postSlug}/og.png` : '/og-articles-image.png';
@@ -112,6 +117,10 @@ if (customOgImage) {
           <slot />
         </div>
 
+        {faqs && faqs.length > 0 && (
+          <FAQSection faqs={faqs} />
+        )}
+
         <PostFooter prevPost={prevPost} nextPost={nextPost} tags={tags} />
 
         {relatedPosts.length > 0 && (
@@ -121,7 +130,7 @@ if (customOgImage) {
 
       <!-- Sticky TOC Sidebar (Desktop) -->
       <aside class="toc-sidebar">
-        <TableOfContents headings={headings} />
+        <TableOfContents headings={allHeadings} />
       </aside>
     </div>
   </div>
