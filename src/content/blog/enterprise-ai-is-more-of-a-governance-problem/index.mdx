@@ -46,7 +46,7 @@ But provisioning an LLM is barely 10% of the journey. The remaining 90% is the u
 
 
 ## The Technology is the Easy Part
-Let’s get one thing out of the way: the foundational technology is largely "solved" for what we need to do. Current enterprise models are incredibly capable and easily handle the vast majority of standard corporate use cases. Whether you are building complex multi-agent workflows in Azure AI Foundry or just setting up a basic RAG pipeline over your internal wikis, the infrastructure is ready.
+Let’s get one thing out of the way: the foundational technology is largely "solved" for what we need to do. Current enterprise models are incredibly capable and easily handle the vast majority of standard corporate use cases. Whether you are building complex multi-agent workflows in Azure AI Foundry or setting up a basic RAG pipeline, your [**enterprise AI harness**](/blog/demystifying-the-ai-harness) infrastructure is ready.
 
 You can provision a secure, private endpoint in minutes. But an LLM sitting in an empty cloud tenant is useless. Its actual business value comes entirely from its context, your corporate data. And that is exactly where our legacy architectures start to crack.
 
@@ -79,7 +79,7 @@ graph LR
 </Callout>
 
 ## Tokens Have Passports: Navigating Data Residency
-For global or regulated enterprises, it matters profoundly where your AI physically thinks. Data residency and sovereignty laws dictate that certain citizen or financial data cannot cross geographic borders.
+For global or regulated enterprises, it matters profoundly where your AI physically thinks. Data residency and sovereignty laws dictate that certain citizen or financial data—similar to the regulated flow of [**OTP authentication in India** ](/blog/digital-india-runs-on-otps)—cannot cross geographic borders.
 
 It is a common architectural blind spot to assume that keeping the database local is enough. In the AI world, the inference, the actual processing of the tokens, must also happen within the allowed geographic boundary. You cannot send European or localised APAC customer data to a US-hosted AI model for summarisation without triggering sovereignty violations. We have to design multi-region AI deployments, pinning localised models to specific geographies so that regulated data never leaves its required jurisdiction.
 

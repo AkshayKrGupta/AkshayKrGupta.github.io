@@ -59,7 +59,7 @@ The underlying AI model powering Copilot is essentially the same reasoning engin
 The model alone cannot do that. Microsoft had to build an enterprise-grade software harness to bridge the gap. In this scenario, the harness provides:
 
 - ***Data Connectivity***: It queries the Microsoft Graph to securely find the presentation and meeting transcript.
-- ***Tool Orchestration***: It leverages standard integration frameworks similar to the MCP to interface with the Exchange and Word APIs to actually draft the email.
+- ***Tool Orchestration***: It leverages standard integration frameworks like the [**Model Context Protocol (MCP)**](/blog/mcp-server-the-abstract-ui-schema-pattern) to interface with the Exchange and APIs to actually draft the email.
 - ***Identity and Access Controls***: Crucially, it enforces your personal permissions. If you ask Copilot for the company payroll, the harness checks your Active Directory permissions, sees you aren't in HR or Payroll, and blocks the model from ever seeing those files.
 
 ## Why the Harness is the Secret to Enterprise AI
@@ -74,7 +74,7 @@ Raw models have no memory; they treat every single prompt as a blank slate. To g
 An unharnessed AI is a massive liability. If you want an agent to write code or update a database, you cannot let it do so unsupervised. A robust harness provides an isolated execution environment (a sandbox). It allows the model to test its work, fail safely, and try again without ever touching production data or causing a catastrophic system failure.
 
 - ***Identity, Guardrails, and RBAC:***
-You cannot build an enterprise AI without strict Role-Based Access Control (RBAC). The harness acts as a continuous security checkpoint. Before the model's intended action is executed, the harness validates it against corporate policies. It prevents data leakage, blocks malicious prompt injections, and ensures the AI only interacts with systems it is explicitly authorized to touch.
+You cannot build an enterprise AI without strict Role-Based Access Control (RBAC), which makes [**enterprise AI primarily a governance problem**](/blog/enterprise-ai-is-more-of-a-governance-problem/). The harness acts as a continuous security checkpoint. The harness acts as a continuous security checkpoint. Before the model's intended action is executed, the harness validates it against corporate policies. It prevents data leakage, blocks malicious prompt injections, and ensures the AI only interacts with systems it is explicitly authorized to touch.
 
 - ***Observability and Traces:***    
 When a standard software script fails, you check the error logs. When an AI agent fails, you need to know why it made the decision it did. The harness records the exact trajectory of every task—the prompt, the context retrieved, the tools called, and the reasoning used. This audit trail is mandatory for compliance, debugging, and continuous improvement.
@@ -85,4 +85,4 @@ The AI landscape changes weekly. The model that is state-of-the-art today might 
 ## The Bottom Line
 When we talk about bringing AI into the enterprise, we aren't just deploying smart chatbots. We are engineering the software infrastructure, the memory, the sandboxes, the security, and the loops, that transforms a raw reasoning engine into a safe, reliable digital colleague.
 
-The model sets the ceiling on how smart your AI can be. But the harness sets the floor on how useful and safe it actually is.
+The model sets the ceiling on how smart your AI can be (though you [**shouldn't use your smartest model for everything**](/blog/stop-using-your-smartest-ai-model-for-everything)). But the harness sets the floor on how useful and safe it actually is.
