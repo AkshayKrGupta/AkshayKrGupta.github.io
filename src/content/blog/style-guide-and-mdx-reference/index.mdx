@@ -1,7 +1,9 @@
 ---
 title: "The Technical Author's Guide & MDX Reference: Do's, Don'ts & Components"
+h1: "The Technical Author's Guide & MDX Reference: Do's, Don'ts & Components"
 description: "A complete authoring style guide, architectural diagramming reference, and interactive MDX component showcase for publishing technical articles."
 pubDate: 2026-08-26
+updatedDate: 2026-09-30
 author: "Akshay K Gupta"
 tags:
   - software-engineering
@@ -36,7 +38,8 @@ Every article must start with YAML frontmatter bounded by triple dashes (`---`).
 ```yaml
 ---
 # REQUIRED FIELDS:
-title: "Article Title (Concise & Descriptive)"
+title: "Article Title (Browser / SEO Title Tag)"
+h1: "Article Headline (Rendered as <h1> on page)"
 description: "A 1-2 sentence compelling summary for search snippets, social cards, and article listings."
 pubDate: 2026-08-26
 
@@ -81,7 +84,7 @@ faqs:
 
 | Category | ✅ Do's | ❌ Don'ts |
 | :--- | :--- | :--- |
-| **Document Structure** | Start the article body with `## 1. Section Title` (H2) and `### Sub-section` (H3). | Never use `# Title` (H1) in markdown body—the layout automatically renders the frontmatter `title` as `<h1>`. |
+| **Document Structure** | Start the article body with `## 1. Section Title` (H2) and `### Sub-section` (H3). | Never use `# Title` (H1) in markdown body—the layout automatically renders the frontmatter `h1` (or `title`) as `<h1>`. |
 | **Table of Contents** | Use clean, semantic headings. The sticky desktop TOC is generated automatically from `##` and `###`. | Don't manually type out a "Table of Contents" list in text. |
 | **Tags & Topics** | Use lowercase kebab-case (e.g. `mcp`, `genai`, `fintech`, `distributed-systems`). | Don't mix casing (`GenAI` vs `genai`) as it creates fragmented tag pages. |
 | **Diagrams** | Use dynamic `<Mermaid />` components or ASCII boxes. | Don't screenshot diagrams or upload heavy unreadable image files. |
