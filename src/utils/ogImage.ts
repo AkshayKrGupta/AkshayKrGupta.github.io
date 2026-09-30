@@ -151,14 +151,15 @@ function renderArchitecturalSchematicVector(): string {
  * Generate a 1200x630 Open Graph PNG buffer for a given blog post
  */
 export async function generateOgImageForPost(post: BlogPost): Promise<Buffer> {
-  const { title, description, pubDate, tags = [] } = post.data;
+  const { title, h1, description, pubDate, tags = [] } = post.data as any;
+  const displayTitle = h1 || title;
   const primaryTag = tags.length > 0 ? tags[0].replace(/-/g, ' ').toUpperCase() : 'ARCHITECTURE NOTE';
   const readingTime = getReadingTime(post.body);
   const formattedDate = formatDate(pubDate);
 
   // Title wrapping (max ~25 characters per line for content column)
-  const titleLines = wrapText(title, 25).slice(0, 3);
-  if (wrapText(title, 25).length > 3) {
+  const titleLines = wrapText(displayTitle, 25).slice(0, 3);
+  if (wrapText(displayTitle, 25).length > 3) {
     titleLines[2] = titleLines[2].replace(/\.{0,3}$/, '') + '...';
   }
 

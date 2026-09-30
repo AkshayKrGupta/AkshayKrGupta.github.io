@@ -38,7 +38,7 @@ const HeadingComponent = headingTag;
 
   <HeadingComponent class={`card-title ${variant === 'standard' ? 'swiss-heading-3' : 'swiss-heading-4'}`}>
     <a href={postUrl} class="card-link">
-      <span>{post.data.title}</span><span class="title-arrow" aria-hidden="true">&nbsp;&rarr;</span>
+      <span>{post.data.h1 || post.data.title}</span><span class="title-arrow" aria-hidden="true">&nbsp;&rarr;</span>
     </a>
   </HeadingComponent>
 

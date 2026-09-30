@@ -5,6 +5,7 @@ import { formatDate } from '../../utils/formatters';
 
 interface Props {
   title: string;
+  h1?: string;
   description: string;
   pubDate: Date;
   updatedDate?: Date;
@@ -16,6 +17,7 @@ interface Props {
 
 const {
   title,
+  h1,
   description,
   pubDate,
   updatedDate,
@@ -23,6 +25,7 @@ const {
   heroImage,
 } = Astro.props;
 
+const headingTitle = h1 || title;
 const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && 'src' in heroImage;
 ---
 
@@ -34,7 +37,7 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
     </a>
   </nav>
 
-  <h1 class="post-title swiss-heading-1">{title}</h1>
+  <h1 class="post-title swiss-heading-1">{headingTitle}</h1>
   <p class="post-description text-muted">{description}</p>
 
   <div class="post-meta-row">
@@ -46,15 +49,6 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
       <div class="meta-item">
         <span class="reading-time">{readingTime}</span>
       </div>
-      {updatedDate && (
-        <>
-          <span class="meta-dot" aria-hidden="true">&bull;</span>
-          <div class="meta-item">
-            <span class="meta-label">Updated:</span>
-            <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate)}</time>
-          </div>
-        </>
-      )}
     </div>
 
     <div class="post-actions font-mono">
@@ -76,7 +70,7 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
         <span class="copy-text">Copy</span>
       </button>
       <a
-        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(Astro.url.href)}`}
+        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(headingTitle)}&url=${encodeURIComponent(Astro.url.href)}`}
         target="_blank"
         rel="noopener noreferrer"
         class="neu-pill action-pill x-share-link"
@@ -111,7 +105,7 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
       {isImageMetadata ? (
         <Image
           src={heroImage as ImageMetadata}
-          alt={title}
+          alt={headingTitle}
           class="post-hero-image"
           loading="eager"
           decoding="async"
@@ -119,7 +113,7 @@ const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && '
       ) : (
         <img
           src={heroImage as string}
-          alt={title}
+          alt={headingTitle}
           class="post-hero-image"
           loading="eager"
           decoding="async"

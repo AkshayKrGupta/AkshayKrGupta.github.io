@@ -26,6 +26,7 @@ interface FAQItem {
 
 interface Props {
   title: string;
+  h1?: string;
   description: string;
   pubDate: Date;
   updatedDate?: Date;
@@ -45,6 +46,7 @@ interface Props {
 
 const {
   title,
+  h1,
   description,
   pubDate,
   updatedDate,
@@ -104,6 +106,7 @@ if (customOgImage) {
       <article class="article-column">
         <PostHeader
           title={title}
+          h1={h1 || title}
           description={description}
           pubDate={pubDate}
           updatedDate={updatedDate}

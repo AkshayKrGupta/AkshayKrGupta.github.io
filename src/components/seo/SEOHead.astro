@@ -38,9 +38,13 @@ const {
 } = Astro.props;
 
 const allKeywords = Array.from(new Set([...tags, ...keywords]));
-const pageTitle = title
-  ? (title.includes(site.name) || title.includes(site.shortName) ? title : `${title} — ${site.name}`)
-  : `${site.name} — ${site.title}`;
+const titleSuffix = `| ${site.shortName}`;
+const trimmedTitle = title?.trim();
+const pageTitle = trimmedTitle
+  ? (trimmedTitle.endsWith(titleSuffix) || trimmedTitle.includes(site.shortName) || trimmedTitle.includes(site.name)
+      ? trimmedTitle
+      : `${trimmedTitle} ${titleSuffix}`)
+  : `${site.shortName} — ${site.title}`;
 const currentUrl = canonicalUrl || new URL(Astro.url.pathname, Astro.site || site.url).href;
 const imageUrl = image.startsWith('http') ? image : new URL(image, Astro.site || site.url).href;
 ---
