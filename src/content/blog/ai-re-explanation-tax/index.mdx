@@ -34,7 +34,7 @@ faqs:
   - question: "What is Anthropic AutoDream?"
     answer: "Anthropic AutoDream represents Level 2 Managed AutoMemory—an asynchronous background synthesis engine that processes past session transcripts during idle time. Inspired by biological memory consolidation, it automatically extracts recurring preferences, project entities, and developer patterns into persistent profiles without manual note-taking, though it lacks deterministic auditability for enterprise codebases."
   - question: "Why is Graph RAG better than Naive Vector RAG for enterprise AI?"
-    answer: "Naive Vector RAG retrieves isolated chunks of text based on keyword or semantic similarity, often missing the broader context. Graph RAG extracts specific entities and their relationships, building a navigable semantic network. This allows the AI to traverse non-obvious dependencies, doubling retrieval accuracy for complex architectural queries."
+    answer: "Naive Vector RAG retrieves isolated chunks of text based on keyword or semantic similarity, often missing the broader context. Graph RAG extracts specific entities and their relationships, building a navigable semantic network. This allows the AI to traverse non-obvious dependencies, improving retrieval accuracy for complex architectural queries."
 ---
 
 import Figure from '../../../components/mdx/Figure.astro';
@@ -60,16 +60,16 @@ Context serves as an AI’s active working memory, encompassing system instructi
 
 <Figure
   src={contextFailureModesImg}
-  alt="AI Context Degradation vs Persistent Memory and The Ralph Loop"
-  caption="Figure 1: The Context Degradation Cycle (Bloat, Rot, and Contamination) and The Ralph Loop Persistence Architecture."
+  alt="AI Context Degradation vs Persistent Memory"
+  caption="The Context Degradation Cycle (Bloat, Rot, and Contamination)"
 />
 
 ### Context Window Failure Modes at a Glance
 | Failure Mode | The Mechanism | The Symptom | Architectural Fix |
 | :--- | :--- | :--- | :--- |
 | **Context Bloat** | High startup token usage | System instructions, MCPs, and schemas consume 30%+ of the window before the first prompt. | **Tier 2 Memory:** Replace encyclopedic prompts with lightweight Level 3 routing files. |
-| **Context Rot** | Attention degradation | Effectiveness drops to ~78% at 256K tokens; AI ignores line-length limits or recent constraints. | **The Ralph Loop:** Aggressive session termination and pristine context resets. |
-| **Context Contamination** | Trapped hallucinations | AI apologizes for an error but repeats it because the initial mistake remains in the prompt history. | **The Ralph Loop:** Extract state to external files and restart the session. |
+| **Context Rot** | Attention degradation | Effectiveness drops significantly; AI ignores line-length limits or recent constraints. | **The Ralph Loop Principle:** Aggressive session termination and pristine context resets. |
+| **Context Contamination** | Trapped hallucinations | AI apologizes for an error but repeats it because the initial mistake remains in the prompt history. | **The Ralph Loop Principle:** Extract state to external files and restart the session. |
 
 **The Architectural Fix** : You cannot selectively purge past tokens or force a degraded session to un-rot. The structural solution relies on a simple principle: *Aggressively terminate long-running sessions, extract vital state into external files, and restart with a completely pristine context window.*
 
@@ -123,7 +123,7 @@ When enterprise scale reaches tens of thousands of codebases, compliance records
 <Figure
   src={memoryLadderImg}
   alt="The 7 Levels of AI Memory Ladder Architecture"
-  caption="Figure 2: The 7 Levels of AI Memory Ladder spanning Ground Floor, Structured Memory, and Distributed Retrieval Systems."
+  caption="The 7 Levels of AI Memory Ladder spanning Ground Floor, Structured Memory, and Distributed Retrieval Systems."
 />
 
 ### The 7 Levels of AI Memory: Architecture Matrix
