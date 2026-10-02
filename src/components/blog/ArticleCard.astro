@@ -1,4 +1,6 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
 import type { BlogPost } from '../../utils/blog';
 import { routes } from '../../utils/blog';
 import { formatDate } from '../../utils/formatters';
@@ -10,6 +12,7 @@ interface Props {
   variant?: 'standard' | 'compact';
   headingTag?: 'h2' | 'h3' | 'h4';
   class?: string;
+  eagerLoad?: boolean;
 }
 
 const {
@@ -17,44 +20,82 @@ const {
   variant = 'standard',
   headingTag = variant === 'standard' ? 'h2' : 'h4',
   class: className = '',
+  eagerLoad = false,
 } = Astro.props;
 
 const readingTime = getReadingTime(post.body || '');
 const postUrl = routes.post(post.slug);
 const HeadingComponent = headingTag;
+
+const heroImage = post.data.heroImage;
+const isImageMetadata = typeof heroImage === 'object' && heroImage !== null && 'src' in heroImage;
 ---
 
 <article class={`article-card card-${variant} ${className}`}>
-  <div class="card-meta font-mono">
-    <time datetime={post.data.pubDate.toISOString()}>
-      {formatDate(post.data.pubDate)}
-    </time>
-    <span class="meta-dot" aria-hidden="true">&bull;</span>
-    <span class="reading-time">{readingTime}</span>
-    {post.data.draft && (
-      <Badge variant="outline" size="sm">Draft</Badge>
-    )}
-  </div>
-
-  <HeadingComponent class={`card-title ${variant === 'standard' ? 'swiss-heading-3' : 'swiss-heading-4'}`}>
-    <a href={postUrl} class="card-link">
-      <span>{post.data.h1 || post.data.title}</span><span class="title-arrow" aria-hidden="true">&nbsp;&rarr;</span>
-    </a>
-  </HeadingComponent>
-
-  <p class="card-desc text-muted">{post.data.description}</p>
-
-  {post.data.tags.length > 0 && (
-    <div class="card-tags">
-      {variant === 'standard'
-        ? post.data.tags.map((tag) => (
-            <Badge variant="neutral" size="sm">#{tag}</Badge>
-          ))
-        : post.data.tags.slice(0, 3).map((tag) => (
-            <Badge variant="neutral" size="sm">#{tag}</Badge>
-          ))}
+  {variant === 'standard' && (
+    <div class="card-thumbnail-wrap">
+      {heroImage ? (
+        isImageMetadata ? (
+          <Image
+            src={heroImage as ImageMetadata}
+            alt={post.data.title}
+            width={440}
+            height={248}
+            format="webp"
+            quality={80}
+            loading={eagerLoad ? 'eager' : 'lazy'}
+            decoding="async"
+            class="card-thumbnail-img"
+          />
+        ) : (
+          <img
+            src={heroImage as string}
+            alt={post.data.title}
+            loading={eagerLoad ? 'eager' : 'lazy'}
+            decoding="async"
+            class="card-thumbnail-img"
+          />
+        )
+      ) : (
+        <div class="card-thumbnail-fallback font-mono" aria-hidden="true">
+          <span class="fallback-tag">#{post.data.tags[0] || 'ARCH'}</span>
+        </div>
+      )}
     </div>
   )}
+
+  <div class="card-body">
+    <div class="card-meta font-mono">
+      <time datetime={post.data.pubDate.toISOString()}>
+        {formatDate(post.data.pubDate)}
+      </time>
+      <span class="meta-dot" aria-hidden="true">&bull;</span>
+      <span class="reading-time">{readingTime}</span>
+      {post.data.draft && (
+        <Badge variant="outline" size="sm">Draft</Badge>
+      )}
+    </div>
+
+    <HeadingComponent class={`card-title ${variant === 'standard' ? 'swiss-heading-3' : 'swiss-heading-4'}`}>
+      <a href={postUrl} class="card-link">
+        <span>{post.data.h1 || post.data.title}</span><span class="title-arrow" aria-hidden="true">&nbsp;&rarr;</span>
+      </a>
+    </HeadingComponent>
+
+    <p class="card-desc text-muted">{post.data.description}</p>
+
+    {post.data.tags.length > 0 && (
+      <div class="card-tags">
+        {variant === 'standard'
+          ? post.data.tags.map((tag) => (
+              <Badge variant="neutral" size="sm">#{tag}</Badge>
+            ))
+          : post.data.tags.slice(0, 3).map((tag) => (
+              <Badge variant="neutral" size="sm">#{tag}</Badge>
+            ))}
+      </div>
+    )}
+  </div>
 </article>
 
 <style>
@@ -67,6 +108,7 @@ const HeadingComponent = headingTag;
     display: flex;
     flex-direction: column;
     cursor: pointer;
+    overflow: hidden;
     transition: transform var(--transition-fast), border-left-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
   }
 
@@ -86,6 +128,10 @@ const HeadingComponent = headingTag;
       opacity: 1;
       transform: translateX(3px);
       color: var(--color-accent);
+    }
+
+    .article-card:hover .card-thumbnail-img {
+      transform: scale(1.04);
     }
   }
 
@@ -117,13 +163,57 @@ const HeadingComponent = headingTag;
   }
 
   /* Standard Variant (Blog Archive & Tag pages) */
+  /* Mobile First: Treatment 1 (Stacked Media Header) */
   .card-standard {
-    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+  }
+
+  .card-standard .card-thumbnail-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-surface-sunken);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .card-thumbnail-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-smooth);
+    display: block;
+  }
+
+  .card-thumbnail-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--color-surface-sunken) 0%, var(--color-surface-raised) 100%);
+  }
+
+  .fallback-tag {
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--color-text-subtle);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .card-standard .card-body {
+    display: flex;
+    flex-direction: column;
     gap: var(--space-3);
+    padding: var(--space-5);
+    min-width: 0;
   }
 
   .card-standard .card-title {
-    font-size: var(--text-2xl);
+    font-size: var(--text-xl);
     font-weight: 700;
     line-height: var(--leading-snug);
     letter-spacing: -0.02em;
@@ -132,11 +222,60 @@ const HeadingComponent = headingTag;
   .card-standard .card-desc {
     font-size: var(--text-sm);
     line-height: var(--leading-normal);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Desktop & Tablet: Split Horizontal (min-width: 640px) */
+  @media (min-width: 640px) {
+    .card-standard {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-6);
+      padding: var(--space-6);
+    }
+
+    .card-standard .card-body {
+      flex: 1 1 0%;
+      min-width: 0;
+      order: 1;
+      padding: 0;
+    }
+
+    .card-standard .card-title {
+      font-size: var(--text-2xl);
+    }
+
+    .card-standard .card-thumbnail-wrap {
+      flex: 0 0 210px;
+      width: 210px;
+      order: 2;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border-subtle);
+      box-shadow: var(--shadow-neu-sm);
+      align-self: center;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .card-standard .card-thumbnail-wrap {
+      flex: 0 0 230px;
+      width: 230px;
+    }
   }
 
   /* Compact Variant (Bento Grid & Related Posts) */
   .card-compact {
     padding: var(--space-5);
+    gap: var(--space-2);
+  }
+
+  .card-compact .card-body {
+    display: flex;
+    flex-direction: column;
     gap: var(--space-2);
   }
 
@@ -149,6 +288,10 @@ const HeadingComponent = headingTag;
   .card-compact .card-desc {
     font-size: var(--text-xs);
     line-height: var(--leading-relaxed);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   /* Shared Card Elements */
@@ -198,7 +341,8 @@ const HeadingComponent = headingTag;
   /* Accessibility: Prefers Reduced Motion */
   @media (prefers-reduced-motion: reduce) {
     .article-card,
-    .title-arrow {
+    .title-arrow,
+    .card-thumbnail-img {
       transition: none !important;
       transform: none !important;
     }

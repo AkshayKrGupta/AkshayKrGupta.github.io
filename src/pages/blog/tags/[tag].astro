@@ -51,8 +51,8 @@ const tagCanonical = `${site.url}${routes.tag(tag!)}`;
     </header>
 
     <div class="articles-archive">
-      {posts.map((post) => (
-        <ArticleCard post={post} variant="standard" />
+      {posts.map((post, index) => (
+        <ArticleCard post={post} variant="standard" eagerLoad={index === 0} />
       ))}
     </div>
   </div>

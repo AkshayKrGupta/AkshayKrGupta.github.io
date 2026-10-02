@@ -55,8 +55,8 @@ const pageTitle = page.currentPage > 1
               <p class="text-muted">No architecture notes published yet. Check back soon!</p>
             </div>
           ) : (
-            page.data.map((post) => (
-              <ArticleCard post={post} variant="standard" />
+            page.data.map((post, index) => (
+              <ArticleCard post={post} variant="standard" eagerLoad={index === 0} />
             ))
           )}
         </div>
