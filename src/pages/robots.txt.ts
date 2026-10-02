@@ -31,6 +31,19 @@ Allow: /
 User-agent: Applebot-Extended
 Allow: /
 
+# Meta AI & Social Crawlers
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Meta-ExternalFetcher
+Allow: /
+
+User-agent: FacebookBot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
 # Discovery & Sitemap
 Sitemap: ${siteUrl}/sitemap.xml
 
